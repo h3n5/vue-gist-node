@@ -1,0 +1,65 @@
+[2018-01-27 15:05:04.564] [DEBUG] logger - 重新检查token
+[2018-01-27 15:06:02.787] [DEBUG] logger - 重新检查token
+[2018-01-27 15:07:34.443] [DEBUG] logger - 重新检查token
+[2018-01-27 15:08:15.993] [DEBUG] logger - 重新检查token
+[2018-01-27 15:08:41.071] [DEBUG] logger - 重新检查token
+[2018-01-27 15:09:30.178] [DEBUG] logger - 重新检查token
+[2018-01-27 15:10:55.577] [DEBUG] logger - 重新检查token
+[2018-01-27 15:11:00.194] [DEBUG] logger - 重新检查token
+[2018-01-27 15:12:03.120] [DEBUG] logger - 重新检查token
+[2018-01-27 15:12:24.190] [DEBUG] logger - 重新检查token
+[2018-01-27 15:13:40.315] [DEBUG] logger - 重新检查token
+[2018-01-27 15:13:48.141] [DEBUG] logger - 重新检查token
+[2018-01-27 15:14:13.484] [DEBUG] logger - 重新检查token
+[2018-01-27 15:14:37.031] [DEBUG] logger - 重新检查token
+[2018-01-27 15:16:27.522] [DEBUG] logger - 重新检查token
+[2018-01-27 15:17:01.695] [DEBUG] logger - 重新检查token
+[2018-01-27 15:17:10.323] [DEBUG] logger - 重新检查token
+[2018-01-27 15:17:17.047] [DEBUG] logger - 重新检查token
+[2018-01-27 15:17:31.168] [DEBUG] logger - 重新检查token
+[2018-01-27 15:17:40.886] [DEBUG] logger - 重新检查token
+[2018-01-27 15:17:49.879] [DEBUG] logger - 重新检查token
+[2018-01-27 15:17:56.790] [DEBUG] logger - 重新检查token
+[2018-01-27 15:18:05.350] [DEBUG] logger - 重新检查token
+[2018-01-27 15:18:16.348] [DEBUG] logger - 重新检查token
+[2018-01-27 15:18:23.794] [DEBUG] logger - 重新检查token
+[2018-01-27 20:03:12.537] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 20:20:00.330] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 20:21:53.558] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 20:22:27.650] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 20:24:27.644] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 20:28:18.240] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 20:30:18.264] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 20:34:39.939] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 20:37:39.292] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 20:39:23.191] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 20:39:45.912] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 20:40:57.655] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 20:41:35.850] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 20:41:51.125] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 20:42:04.066] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 20:44:04.049] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 20:52:53.904] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 20:52:55.138] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 20:54:55.164] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 20:56:19.631] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 20:58:19.641] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 21:07:43.741] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 21:08:07.044] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 21:10:07.031] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 21:14:05.484] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 21:19:44.546] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 21:20:22.331] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 21:21:03.337] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 21:22:19.354] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 21:22:25.039] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 21:22:51.673] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 21:24:51.680] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 21:26:38.656] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 21:35:13.068] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 21:36:17.281] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 21:37:25.580] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 21:37:27.674] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 21:38:08.953] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 21:40:08.951] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0
+[2018-01-27 22:49:07.907] [DEBUG] logger - 进入wx获取图片 undefined/undefined/undefined/undefined/mediaId=1BxqLjJmjxwJot5v6BHFa87xRWPFD88tAdCa1SAI77_0

@@ -1,0 +1,420 @@
+<%- include("../template/head.ejs",{title:"遗址管理增加"}) %>
+<script src="./js/tinymce/jquery.tinymce.min.js"></script>
+<script src="./js/tinymce/tinymce.min.js"></script>
+<script src="./js/jquery.form.js"></script><style>
+    .el-select {
+        width: 100%;
+    }
+
+    .selectLabel {
+        line-height: 38px;
+        text-align: center;
+        /*text-align-last: justify;*/
+        /*padding-right: 10px;*/
+        background-color: #f5f7fa;
+        color: #909399;
+        vertical-align: middle;
+        border: 1px solid #dcdfe6;
+        border-radius: 4px 0 0 4px;
+        white-space: nowrap;
+        border-right: none;
+    }
+
+    .sps .el-input__inner {
+        border-radius: 0px 4px 4px 0;
+    }
+    .el-form-item{
+        margin-bottom:20px
+    }
+    .el-input-group__append{
+        width:83px;
+        text-align:center;
+    }
+</style>
+<body class="pd15Iner">
+<div id="app" v-cloak>
+    <div class="widthBlock pd20 ">
+    <el-row type="flex" justify="left">
+        <el-button type="primary" @click="addSave">保存</el-button>
+        <el-button type="" @click="back">返回</el-button>
+    </el-row>
+    </div>
+    <div class="widthBlock pd20  mt15">
+        <el-row :gutter="100">
+        <el-form  :model="info" label-width="80px" :rules="rules">
+            <el-col :span="12">
+                <el-form-item label="遗迹名称" prop="name">
+                <el-input v-model="info.name" placeholder="请输入遗迹名称"></el-input>
+                </el-form-item>
+                <el-form-item label="遗迹类型" prop="category">
+                <el-select  v-model="info.category">
+                    <el-option v-for="item in category" :value="item.value" :key="item.value"
+                               :label="item.label"></el-option>
+                </el-select>
+                </el-form-item>
+                <el-form-item label="遗迹年代" prop="age">
+                       <el-select  v-model="info.age">
+                            <el-option v-for="item in age" :value="item.value" :key="item.value"
+                                       :label="item.label"></el-option>
+                        </el-select>
+                </el-form-item>
+                <el-form-item label="海拔" prop="altitude">
+                    <el-input  v-model.number="info.altitude" placeholder="请输入海拔">
+                        <template slot="append">米</template>
+                    </el-input>
+                </el-form-item>
+                <el-form-item label="面积" prop="acreage">
+                    <el-input  v-model.number="info.acreage" placeholder="请输入面积">
+                        <template slot="append">平方米</template>
+                    </el-input>
+                </el-form-item>
+                <el-form-item label="相对高度" prop="reHeight">
+                <el-input  v-model.number="info.reHeight" placeholder="请输入相对高度">
+                    <template slot="append">米</template>
+                </el-input>
+                </el-form-item>
+            </el-col>
+            <el-col :span="12">
+                <el-form-item label="遗迹流域" prop="area_name">
+                <el-select v-model="relicSelect" @change='change_status(relicSelect)'>
+                    <el-option v-for="item in relicArea" :value="item.id" :key="item.id"
+                               :label="item.area_name"></el-option>
+                </el-select>
+                </el-form-item>
+                <el-form-item label="纬度" prop="lat">
+                <el-row :gutter="0">
+                    <el-col :span="7" class="pr10">
+                        <el-input  v-model.number="lat.latD" placeholder="度" name='latD'>
+                        </el-input>
+                    </el-col>
+                    <el-col :span="7" class="pr10">
+                        <el-input   v-model.number="lat.latF" placeholder="分" name='latF'>
+                        </el-input>
+                    </el-col>
+                    <el-col :span="10">
+                        <el-input   v-model.number="lat.latM" placeholder="秒" name='latM'>
+                            <el-button slot="append" icon="el-icon-location" @click="dialogVisible =true">地图</el-button>
+                        </el-input>
+                    </el-col>
+                </el-row>
+                </el-form-item>
+                <el-form-item label="经度" prop="lng">
+                    <el-row>
+                <el-col :span="7" class="pr10">
+                        <el-input class="mb10"  v-model="lng.lngD" placeholder="度" name='lng'>
+                        </el-input>
+                </el-col>
+                    <el-col :span="7" class="pr10">
+                        <el-input class="mb10"  v-model="lng.lngF" placeholder="分" name='lng'>
+                        </el-input>
+                    </el-col>
+                    <el-col :span="10">
+                        <el-input class="mb10"  v-model="lng.lngM" placeholder="秒" name='lng'>
+                            <el-button slot="append" icon="el-icon-location" @click="dialogVisible =true">地图</el-button>
+                        </el-input>
+                    </el-col>
+                    </el-row>
+                </el-form-item>
+                <el-form-item label="地址" prop="address">
+                <el-input  v-model="info.address" placeholder="请输入地址">
+                </el-input>
+                </el-form-item>
+                <el-form-item label="县市" prop="towns">
+                <el-input  v-model="info.towns" placeholder="请输入县市">
+                </el-input>
+                </el-form-item>
+            </el-col>
+        </el-row>
+
+        <el-dialog
+                title="地图"
+                :visible.sync="dialogVisible"
+                :lock-scroll="false"
+                @open="initMap"
+                width="80%">
+            <div id="bmap" style="height:400px"></div>
+        </el-dialog>
+    </div>
+    <div class="widthBlock pd20 mt15">
+        <el-row>
+            <span class="relicTitle">遗迹内容：</span>
+            <el-col :span="24" :offset="0">
+                <el-input  id="tinymceEditer" :rows="6" type="textarea" v-model="info.content" placeholder="请输入内容"></el-input>
+            </el-col>
+        </el-row>
+    </div>
+    <div class="widthBlock pd20 mt15">
+        <el-row>
+            <span class="relicTitle">附件：</span>
+            <el-col :span="24" :offset="0">
+                <el-upload
+                        action="/areaUpload"
+                        list-type="picture-card"
+                        multiple
+                        :file-list="img_list"
+                        :on-preview="handlePictureCardPreview"
+                        :on-remove="handleRemove"
+                        :on-success="handleSuccess">
+                    <i class="el-icon-plus"></i>
+                </el-upload>
+                <el-dialog :visible.sync="imgVisible" :lock-scroll=false>
+                    <img width="100%" :src="dialogImageUrl" alt="加载失败" class="imgShow">
+                </el-dialog>
+            </el-col>
+        </el-row>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=jbOCEhhzH29ukvXtmk1FVdst3QhpeU1G"></script>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            info: {
+                name:"",
+                areaId:"",
+                age:"1",
+                altitude:"",
+                acreage:"",
+                towns:"",
+                address:"",
+                content:"",
+                lat:'{"latD":"0","latF":"0","latM":"0"}',
+                lng:'{"lngD":"0","lngF":"0","lngM":"0"}',
+                reHeight:"",
+                category:"1",
+                attach:""
+            },
+            lat:{
+                latD:null,
+                latF:null,
+                latM:null,
+            },
+            lng:{
+                lngD:null,
+                lngF:null,
+                lngM:null
+            },
+            dialogVisible: false,
+            imgVisible:false,
+            tinymceEditer: false,
+            relicSelect: "",
+            map: {},
+            relicArea: [],
+            age: [{label: "青铜", value: '1'}, {label: "新石器", value: '2'}],
+            category: [{label: "山岗", value: '1'}, {label: "台地", value: '2'}, {label: "坡地", value: '3'}, {
+                label: "岛屿",
+                value: '4'
+            }],
+            dialogImageUrl:'',
+            img_list:[],
+            rules: {
+              name: [
+                { required: true, message: '遗址名称不能为空', trigger: 'blur' },
+              ],
+              category: [
+                { required: true,trigger: 'change' }
+              ],
+              age: [
+                { required: true, trigger: 'change' }
+              ],
+              altitude: [
+                {type:'number',message: '海拔必须为数字值', trigger: 'change' }
+              ],
+              acreage: [
+                {type:'number',message: '面积必须为数字值', trigger: 'change' }
+              ],
+              reHeight: [
+                { type:'number',message: '高度必须为数字值', trigger: 'change' }
+              ],
+              area_name: [
+                { required: true, trigger: 'blur' }
+              ],
+            //   lat: 
+            //     {type: "object",required: true,trigger: 'blur',fields: {
+            //       latD: {type: "number", required: true},
+            //       latF: {type: "number", required: true},
+            //       latM: {type: "number", required: true}
+            //     } 
+            //     }
+            //   ,
+            //   lng: [
+            //     { type:'number',message: '纬度必须为数字值', trigger: 'blur' }
+            //   ],
+              address: [
+                {  trigger: 'blur' }
+              ],
+              towns: [
+                {   trigger: 'blur' }
+              ]
+            }
+        },
+        computed: {
+        },
+        watch: {
+            lng: {
+                handler(v, oldVal) {
+                    this.info.lng = JSON.stringify(this.lng);
+                },
+                deep: true
+            },
+            lat: {
+                handler(v, oldVal) {
+                    this.info.lat = JSON.stringify(this.lat);
+                },
+                deep: true
+            },
+        },
+        mounted: function () {
+            //获取区域列表
+            axios.post("/getRelicArea").then((res) => {
+                if (res.data.length > 0) {
+
+                    this.relicArea = res.data;
+                    if (res.data.length > 0) {
+                        this.info.areaId = res.data[0].id;
+                        this.relicSelect = res.data[0].id;
+                    }
+                }
+
+            })
+             this.initEdit();
+
+
+        },
+        methods: {
+            back(){
+                window.history.back()
+            },
+            addSave: function (event) {
+                if (this.info.name == "") {
+                    this.$message.warning("遗迹名称不能为空");
+                    return;
+                }
+                axios.post("/relicManAddSave", this.info).then((res) => {
+                    if (res.data.status === 200) {
+                        this.$message({message:res.data.message,type:"success",duration:1500,onClose:()=>{window.location.href="/relicMan"}});
+                    } else {
+                        this.$message.error(res.data.message);
+                    }
+                })
+            },
+            change_status() {
+                this.info.areaId = this.relicSelect;
+                this.map = this.relicArea.find((v) => {
+                    return v.id == this.relicSelect
+                });
+                var points = [];
+                JSON.parse(this.map.area_position).forEach((value, index) => {
+                    points.push(new BMap.Point(value.lng, value.lat));
+                })
+                return points
+            },
+            initEdit() {
+                this.$nextTick(() => {
+                    let vm = this;
+                    let height = document.body.offsetHeight - 300;
+                    tinymce.init({
+                        selector: '#tinymceEditer',
+                        branding: false,
+                        upload_image_url: '/areaUpload',
+                        elementpath: false,
+                        height: height,
+                        encoding : "raw",
+                        language: 'zh_CN',
+                        autoresize_bottom_margin: 50,
+                        menubar: 'edit insert view format table tools',
+                        plugins: [
+                            'advlist autolink lists link image charmap print preview hr anchor pagebreak imagetools',
+                            'searchreplace visualblocks visualchars code fullpage',
+                            'insertdatetime media nonbreaking save table contextmenu directionality',
+                            'emoticons paste textcolor colorpicker textpattern imagetools codesample uploadimage autoresize'
+                        ],
+                        toolbar: ' newnote print preview | undo redo | insert | styleselect | forecolor backcolor bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image emoticons media codesample| uploadimage',
+                        autosave_interval: '20s',
+                        image_advtab: true,
+                        table_default_styles: {
+                            width: '100%',
+                            borderCollapse: 'collapse'
+                        },
+                        setup: function (editor) {
+                            editor.on('init', function (e) {
+                                vm.spinShow = false;
+
+                                if (!isEmpty(app.info.content)) {
+                                    tinymce.get('tinymceEditer').setContent(decodeURI(app.info.content));
+                                }
+                                // else if(localStorage.editorContent){
+                                //     tinymce.get('tinymceEditer').setContent(localStorage.editorContent);
+                                // }
+                            });
+                            editor.on('keyup', function (e) {
+                                //localStorage.editorContent = tinymce.get('tinymceEditer').getContent();
+                                app.info.content=encodeURI(tinymce.get('tinymceEditer').getContent());
+                            });
+                        }
+                    });
+                });
+            },
+            initMap() {
+                this.$nextTick(() => {
+                    var map = new BMap.Map("bmap", {enableMapClick: false});
+                    map.centerAndZoom(new BMap.Point(118.15045, 24.495434), 13);
+                    map.addControl(new BMap.MapTypeControl());
+                    map.setCurrentCity("厦门");
+                    map.enableScrollWheelZoom(true);
+                    // map.addEventListener("click", (e) => {
+                    //     if (typeof marker != "undefined") {
+                    //         map.removeOverlay(marker);
+                    //     }
+                    //     this.info.lat = e.point.lat;
+                    //     this.info.lng = e.point.lng;
+                    //     var point = new BMap.Point(e.point.lng, e.point.lat);
+                    //     marker = new BMap.Marker(point);
+                    //     map.addOverlay(marker);
+                    //     this.dialogVisible=false;
+                    // });
+                    var points=this.change_status();
+                    map.clearOverlays();
+                    var polygon = new BMap.Polygon(points, {
+                        strokeColor: "#1E9FFF",
+                        strokeWeight: 2,
+                        strokeOpacity: 0.8
+                    }); //创建多边形
+                    map.addOverlay(polygon);
+                })
+
+            },
+            handleRemove(file, fileList) {
+                this.$message.success("删除成功");
+                var a=[];
+                fileList.forEach((v)=>{
+                    a.push(v.response.file.filename)
+                })
+                this.info.attach=a.join(",");
+
+            },
+            handlePictureCardPreview(file) {
+                this.dialogImageUrl = file.url;
+                this.imgVisible = true;
+            },
+            handleSuccess(response, file, fileList){
+                var a=[];
+                var localUrl=imgUrl();
+                if(response.status===200){
+                    this.$message.success("上传成功")
+                    fileList.forEach((v)=>{if(v.response){
+                        a.push(v.response.file.filename);
+
+                        if(/\w(\.gif|\.jpeg|\.png|\.jpg|\.bmp)/i.test(v.response.file.filename)){
+                            this.img_list.push({name:v.response.file.filename,url:localUrl+v.response.file.filename})
+                        }else{
+                            this.img_list.push({name:v.response.file.filename,url:localUrl+"file.png"})
+                        }
+                    }})
+                }
+                this.$data.info.attach=a.join(",");
+            }
+        }
+    })
+</script>

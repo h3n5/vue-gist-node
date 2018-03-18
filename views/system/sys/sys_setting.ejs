@@ -1,0 +1,64 @@
+﻿<%- include("../../template/head.ejs",{title:""}) %>
+<body class="pd15Iner">
+<div id="app">
+  <div class="">
+    <div class="tabs_title_only">
+      <span>系统参数</span>
+    </div>
+    <ul class="ulImg">
+        <% if(chkPerm("sys_compFrame")){ %>
+      <li onClick="openNewtabs(this,'/sys_compFrame','公司管理')">
+        <span class="isCompMust butComp">必填</span>
+        <div class="clickImg">
+          <img src="images/setting/setImg_s1.png" width="60" height="60" alt="" />
+        </div>
+        <div class="imgTitle">公司管理</div>
+        <span class="imgInfo notComp">未完成</span>
+      </li>
+        <% } %>
+        <% if(chkPerm("sys_deptFrame")){ %>
+      <li onClick="openNewtabs(this,'/sys_deptFrame','部门管理')">
+        <span class="isCompMust">必填</span>
+        <div class="clickImg">
+          <img src="images/setting/setImg_s2.png" width="60" height="60" alt="" />
+        </div>
+        <div class="imgTitle">部门管理</div>
+        <span class="imgInfo isComp">已完成</span>
+      </li>
+        <% } %>
+        <% if(chkPerm("sys_roleList")){ %>
+      <li onClick="openNewtabs(this,'/sys_roleList','角色管理')">
+        <span class="isCompMust">必填</span>
+        <div class="clickImg">
+          <img src="images/setting/setImg_s5.png" width="60" height="60" alt="" />
+        </div>
+        <div class="imgTitle">角色管理</div>
+        <span class="imgInfo isComp">已完成</span>
+      </li>
+        <% } %>
+        <% if(chkPerm("sys_rolePermList")){ %>
+      <li onClick="openNewtabs(this,'/sys_rolePermList','角色权限')">
+        <span class="isCompMust">必填</span>
+        <div class="clickImg">
+          <img src="images/setting/setImg_s4.png" width="60" height="60" alt="" />
+        </div>
+        <div class="imgTitle">角色权限</div>
+        <span class="imgInfo isComp">已完成</span>
+      </li>
+        <% } %>
+        <% if(chkPerm("sys_userFrame")){ %>
+      <li onClick="openNewtabs(this,'/sys_userFrame','人员管理')">
+        <span class="isCompMust">必填</span>
+        <div class="clickImg">
+          <img src="images/setting/setImg_s3.png" width="60" height="60" alt="" />
+        </div>
+        <div class="imgTitle">人员管理</div>
+        <span class="imgInfo isComp">已完成</span>
+      </li>
+        <% } %>
+    </ul>
+  </div>
+</div>
+</body>
+
+</html>

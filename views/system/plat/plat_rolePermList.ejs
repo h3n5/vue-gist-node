@@ -1,0 +1,138 @@
+<%- include("../../template/head.ejs",{title:""}) %>
+<body class="pd15Iner">
+<div id="app" v-cloak>
+    <div class="widthBlock">
+        <el-form :inline="true"  class="demo-form-inline form-item-clearMarign">
+            <el-form-item label="角色名称">
+                <el-input placeholder="请输入角色名称" v-model="base.search.roleName"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="subSearch">查询</el-button>
+            </el-form-item>
+        </el-form>
+    </div>
+    <div class="widthBlock">
+        <el-table :data="listData" stripe="" highlight-current-row @current-change="handleCurrentChange">
+            <el-table-column type="index" label="序号" width="100"></el-table-column>
+            <el-table-column prop="roleName" label="角色"></el-table-column>
+            <el-table-column prop="permName" label="权限"></el-table-column>
+            <el-table-column label="权限" width="200">
+                <template slot-scope="scope">
+                    <el-button @click="editData(scope.row)" type="text" size="small">选择权限</el-button>
+                    <el-button @click="delData(scope.row)" type="text" size="small">清空权限</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+        <%- include("../../template/page_1.ejs") %>
+    </div>
+    <el-dialog title="选择权限" :visible.sync="dialogFormVisible">
+        <el-form :model="base.tmpData" ref="base.tmpData" :rules="rules">
+            <el-form-item label="" :label-width="labelWidth" prop="perm">
+                <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+                <el-checkbox-group v-model="base.tmpData.pid"  @change="handleCheckedChange">
+                    <el-checkbox v-for="perm in hasPermData" :label="perm.id+''">{{perm.permName}}</el-checkbox>
+                </el-checkbox-group>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="resetForm('base.tmpData')">取 消</el-button>
+            <el-button type="primary"  @click="submitForm('base.tmpData')">确 定</el-button>
+        </div>
+    </el-dialog>
+</div>
+</body>
+<script type="text/javascript">
+    var listData=JSON.parse('<%-JSON.stringify(listData)%>');
+    var hasPermData=JSON.parse('<%-JSON.stringify(hasPermData)%>');
+    var pageInfo=JSON.parse('<%-JSON.stringify(pageInfo)%>');
+    $.each(listData, function(i, v){
+        v.pid= isEmpty(v.pid)?[]:v.pid.split(',');
+    });
+    var hasPermIds=[];//解析所有的权限ID
+     $.each(hasPermData, function(i, v){
+         hasPermIds.push(v.id+'');//转为字符串形式
+     });
+    var app = new Vue({
+        el: '#app',
+        data: {
+            listData: listData,
+            hasPermData: hasPermData,
+            hasPermIds:hasPermIds,
+            base:{
+                tmpData:{},
+                page:pageInfo,
+                search:{roleName:pageInfo.search.roleName}
+            },
+            dialogFormVisible: false,
+            labelWidth: '120px',
+            currentRow:null,
+            checkAll: false,
+            isIndeterminate: true,
+            rules: {
+            }
+        },computed: {
+        },
+        methods: {
+           editData: function (curRow){//编辑
+                this.base.tmpData=curRow;
+                this.dialogFormVisible = true;
+            },initModJson:function(){//初始化结构
+                return {id:"", pid: ""};
+            },handleCurrentChange :function(val) {//获取当前行
+                this.currentRow = val;
+            },submitForm:function (formName) {//提交数据
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        this.base.tmpData.pid=this.base.tmpData.pid.join();
+                        var url="/rolePermSave";
+                        axios.post(url,{postData:this.base.tmpData}).then(res=>{
+                            window.location.reload();
+                            this.dialogFormVisible = false;
+                        });
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            },resetForm:function(formName) {//复原数据
+                this.dialogFormVisible = false;
+                this.$refs[formName].resetFields();
+            },subSearch:function() {//搜索
+                window.location.replace("/sysRolePermList?search="+JSON.stringify(this.base.search));
+            },curPageChange(val){
+                window.location.replace("/sysRolePermList?curPage="+val+"&search="+JSON.stringify(this.base.search));
+            },handleCheckAllChange(val) {
+                this.base.tmpData.pid = val ? this.hasPermIds : [];
+                this.isIndeterminate = false;
+            },handleCheckedChange(value) {
+                var checkedCount = value.length;
+                this.checkAll = checkedCount === this.hasPermIds.length;
+                this.isIndeterminate = checkedCount > 0 && checkedCount < this.hasPermIds.length;
+            },delData: function (curRow){//删除数据
+                var msg = "确定清空权限吗?";
+                this.$confirm(msg, '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    axios.post("/rolePermDel",{vid:curRow.id}).then(res=>{
+                        if(res.data.result=="ok"){
+                            this.$message({
+                                message: '操作成功!',
+                                type: 'success',
+                                onClose:function () {
+                                    window.location.reload();
+                                }
+                            });
+                        }else{
+                            this.$message.error('操作失败,请重试!');
+                        }
+                    });
+                });
+            }
+        },created () {
+            this.base.tmpData=this.initModJson();
+        }
+    })
+</script>
+</html>

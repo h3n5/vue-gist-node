@@ -1,0 +1,643 @@
+<%- include("../template/head.ejs",{title:"遗址管理编辑"}) %>
+<script src="./js/tinymce/jquery.tinymce.min.js"></script>
+<script src="./js/tinymce/tinymce.min.js"></script>
+<script src="./js/jquery.form.js"></script>
+<style>
+    .poTable{
+        margin: 20px 30px 0 0;
+    }
+    .el-select {
+        width: 100%;
+    }
+
+    .selectLabel {
+        line-height: 38px;
+        text-align: center;
+        /*text-align-last: justify;*/
+        /*padding-right: 10px;*/
+        background-color: #f5f7fa;
+        color: #909399;
+        vertical-align: middle;
+        border: 1px solid #dcdfe6;
+        border-radius: 4px 0 0 4px;
+        white-space: nowrap;
+        border-right: none;
+    }
+
+    .sps .el-input__inner {
+        border-radius: 0px 4px 4px 0;
+    }
+    .imgShow{
+        width: 100%;
+        max-height: 300px;
+    }
+    .el-table th{
+        background:#f4f4f4 !important;
+    }
+    .el-input-group__append{
+        width:83px;
+        text-align:center;
+    }
+</style>
+<body class="pd15Iner">
+<div id="app" v-cloak>
+    <div class="widthBlock pd20 ">
+        <el-row type="flex" justify="left">
+            <%if(tempData.type){%>
+            <el-button type="primary" @click="addSave(1,'info')">更新</el-button>
+            <%}else{%>
+            <el-button type="primary" @click="addSave(0,'info')">保存</el-button>
+            <%}%>
+            <el-button type="" @click="back">返回</el-button>
+        </el-row>
+    </div>
+    <div class="widthBlock pd20 mt15">
+        <el-row :gutter="100">
+        <el-form  :model="info" label-width="80px" :rules="rules" ref="info">
+            <el-col :span="12">
+                <el-form-item label="遗迹名称" prop="name" required>
+                <el-input v-model="info.name" placeholder="请输入遗迹名称"></el-input>
+                </el-form-item>
+                <el-form-item label="遗迹类型" prop="category">
+                <el-select  v-model="info.category">
+                    <el-option v-for="item in category" :value="item.value" :key="item.value"
+                               :label="item.label"></el-option>
+                </el-select>
+                </el-form-item>
+                <el-form-item label="遗迹年代" prop="age">
+                       <el-select  v-model="info.age">
+                            <el-option v-for="item in age" :value="item.value" :key="item.value"
+                                       :label="item.label"></el-option>
+                        </el-select>
+                </el-form-item>
+                <el-form-item label="海拔" prop="altitude">
+                    <el-input  v-model.number="info.altitude" placeholder="请输入海拔">
+                        <template slot="append">米</template>
+                    </el-input>
+                </el-form-item>
+                <el-form-item label="面积" prop="acreage">
+                    <el-input  v-model.number="info.acreage" placeholder="请输入面积">
+                        <template slot="append">平方米</template>
+                    </el-input>
+                </el-form-item>
+                <el-form-item label="相对高度" prop="reHeight">
+                <el-input  v-model.number="info.reHeight" placeholder="请输入相对高度">
+                    <template slot="append">米</template>
+                </el-input>
+                </el-form-item>
+            </el-col>
+            <el-col :span="12">
+                <el-form-item label="遗迹流域" prop="areaId">
+                <el-select v-model="info.areaId" @change='change_status(info.areaId)'>
+                    <el-option v-for="item in relicArea" :value="item.id" :key="item.id"
+                               :label="item.area_name"></el-option>
+                </el-select>
+                </el-form-item>
+                <el-form-item label="纬度">
+                <el-row>
+                    <el-col :span="7" class="pr10">
+                        <el-input  v-model="info.lat.latD" placeholder="度">
+                        </el-input>
+                    </el-col>
+                    <el-col :span="7" class="pr10">
+                        <el-input   v-model="info.lat.latF" placeholder="分">
+                        </el-input>
+                    </el-col>
+                    <el-col :span="10">
+                        <el-input   v-model="info.lat.latM" placeholder="秒">
+                            <el-button slot="append" icon="el-icon-location" @click="dialogVisible =true">地图</el-button>
+                        </el-input>
+                    </el-col>
+                </el-row>
+                </el-form-item>
+                <el-form-item label="经度">
+                    <el-row>
+                <el-col :span="7" class="pr10">
+                        <el-input   v-model="info.lng.lngD" placeholder="度">
+                        </el-input>
+                </el-col>
+                    <el-col :span="7" class="pr10">
+                        <el-input   v-model="info.lng.lngF" placeholder="分">
+                        </el-input>
+                    </el-col>
+                    <el-col :span="10">
+                        <el-input  v-model="info.lng.lngM" placeholder="秒">
+                            <el-button slot="append" icon="el-icon-location" @click="dialogVisible =true">地图</el-button>
+                        </el-input>
+                    </el-col>
+                    </el-row>
+                </el-form-item>
+                <el-form-item label="地址" prop="address">
+                <el-input  v-model="info.address" placeholder="请输入地址">
+                </el-input>
+                </el-form-item>
+                <el-form-item label="县市" prop="towns">
+                <el-input  v-model="info.towns" placeholder="请输入县市">
+                </el-input>
+                </el-form-item>
+            </el-col>
+        </el-row>
+        <el-dialog
+                title="地图"
+                :visible.sync="dialogVisible"
+                :lock-scroll="false"
+                @open="initMap"
+                width="80%">
+            <div id="bmap" style="height:400px"></div>
+        </el-dialog>
+    </div>
+    <div class="widthBlock pd20 mt15">
+        <el-row>
+            <span class="relicTitle">遗迹内容：</span>
+            <el-col :span="24" :offset="0">
+                <el-input v-loading="loading"
+                          id="tinymceEditer"
+                          :rows="6" type="textarea"
+                          v-model="info.content"
+                          placeholder="请输入内容">
+                </el-input>
+            </el-col>
+        </el-row>
+    </div>
+    <div class="widthBlock pd20 mt15">
+        <el-row>
+            <span class="relicTitle">附件：</span>
+            <el-col :span="24" :offset="0">
+                <el-upload
+                        action="/areaUpload"
+                        list-type="picture-card"
+                        multiple
+                        :file-list="img_list"
+                        :on-preview="handlePictureCardPreview"
+                        :on-remove="handleRemove"
+                        :on-success="handleSuccess">
+                    <i class="el-icon-plus"></i>
+                </el-upload>
+                <el-dialog :title="fileName" :visible.sync="imgVisible" :lock-scroll=false >
+                    <img  :src="dialogImageUrl" alt="加载失败" class="imgShow">
+                    <span slot="footer" class="dialog-footer">
+                        <el-button @click="imgVisible = false">取 消</el-button>
+                        <el-button type="primary" @click="download(fileName)">下 载</el-button>
+                    </span>
+                </el-dialog>
+            </el-col>
+        </el-row>
+    </div>
+    <div class="widthBlock pd20 mt15">
+        <el-row>
+            <el-col :span="2">
+                <span class="relicTitle">勘察：</span>
+            </el-col>
+            <el-col :span="1" :offset="21">
+                <el-button @click="addSurvey()" type="primary" size="mini"><i class="fa fa-plus" aria-hidden="true"></i></el-button>
+            </el-col>
+            <el-col :span="24" :offset="0">
+                <el-table
+                        border
+                        :data="survey"
+                        :stripe=false
+                        :fit=true
+                        style="width: 100%"
+                        >
+                    <el-table-column
+                            type="index"
+                            label="序号"
+                            align="center"
+                            width="50">
+                    </el-table-column>
+                    <el-table-column
+                            prop="survey_name"
+                            label="勘察名称"
+                            align="center"
+                            width="180">
+                    </el-table-column>
+                    <el-table-column
+                            prop="survey_time"
+                            label="日期"
+                            align="center"
+                            width="180">
+                    </el-table-column>
+                    <el-table-column
+                            prop="survey_make_name"
+                            label="制作人"
+                            align="center"
+                            width="180">
+                    </el-table-column>
+                    <el-table-column
+                            prop="survey_status"
+                            align="center"
+                            width="100"
+                            label="状态">
+                        <template slot-scope="scope">
+                            <span>{{scope.row.survey_status==1?"已完成":"未完成"}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                            prop="survey_info"
+                            align="center"
+                            label="详情">
+                    </el-table-column>
+                    <el-table-column
+                            fixed="right"
+                            label="操作"
+                            align="center"
+                            width="200">
+                        <template slot-scope="scope">
+                            <el-button v-if="scope.row.survey_status==0" type="text" size="small" @click="surveyEdit(scope.row.id)">编辑</el-button>
+                            <el-button v-if="scope.row.survey_status==0" @click="compSurvey(scope.row.id)" type="text" size="small">完成</el-button>
+                            <el-button  type="text" size="small"  @click="delSurvey(scope.row.id,scope.$index)">删除</el-button>
+                            <el-button v-if=false type="text" size="small"  @click="viewSurvey(scope.row.id)">查看</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-col>
+        </el-row>
+        <el-dialog
+                title="添加勘察"
+                :visible.sync="modalSurvey"
+                :lock-scroll="false"
+                width="50%">
+            <el-form :model="newSurvey" :rules="rulesSur" ref="newSurvey" >
+                <el-form-item label="" prop="survey_name">
+                    <el-input class="mb10"  v-model="newSurvey.survey_name" placeholder="勘察名称">
+                        <template slot="prepend">名称</template>
+                    </el-input>
+                </el-form-item>
+                <el-form-item label="" >
+            <el-input class="mb10" type="textarea" :maxlength="2000" :rows="6"  v-model="newSurvey.survey_info" placeholder="勘察情况记录">
+            </el-input>
+                </el-form-item>
+            </el-form>
+    <el-button @click="modalSurvey = false">取 消</el-button>
+    <el-button type="primary" @click="addSurveySave">保 存</el-button>
+  </span>
+        </el-dialog>
+        <el-dialog
+                title="编辑勘察"
+                :visible.sync="modalSurveyEdit"
+                :lock-scroll="false"
+                width="50%">
+            <el-form :model="editSurvey" :rules="rulesSur" ref="editSurvey" >
+                <el-form-item label="" prop="survey_name">
+                    <el-input class="mb10"  v-model="editSurvey.survey_name" placeholder="勘察名称">
+                        <template slot="prepend">名称</template>
+                    </el-input>
+                </el-form-item>
+                <el-form-item label="" >
+                    <el-input class="mb10" type="textarea" :maxlength="2000" :rows="6"  v-model="editSurvey.survey_info" placeholder="勘察情况记录">
+                    </el-input>
+                </el-form-item>
+            </el-form>
+            <el-button @click="modalSurveyEdit = false">取 消</el-button>
+            <el-button type="primary" @click="editSurveySave">保 存</el-button>
+            </span>
+        </el-dialog>
+        <el-dialog
+                title="查看勘察"
+                :visible.sync="modalSurveyView"
+                :lock-scroll="false"
+                width="50%">
+                <div class="mb10"><span class="infoTitle">勘察名称</span>{{editSurvey.survey_name}}</div>
+            <div class="mb10"><span class="infoTitle">勘察详情</span>{{editSurvey.survey_info}}</div>
+            <div class="mb10"><span class="infoTitle">勘察人</span>{{editSurvey.survey_make_name}}</div>
+            <el-button @click="modalSurveyView = false">close</el-button>
+            </span>
+        </el-dialog>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    <%tempData[0].lat=JSON.parse(tempData[0].lat);tempData[0].lng=JSON.parse(tempData[0].lng);%>
+    var info=JSON.parse('<%-JSON.stringify(tempData)%>')[0];
+    var img_list=[];
+    var attach=isEmpty(info.attach)?[]:info.attach.split(",");
+    var localUrl=imgUrl();
+    for(var i=0;i<attach.length;i++){
+        if(/\w(\.gif|\.jpeg|\.png|\.jpg|\.bmp)/i.test(attach[i])){
+            img_list.push({name:attach[i],url:localUrl+attach[i]})
+        }else{
+            switch(attach[i].split(".")[1]){
+                case "rar": img_list.push({name:attach[i],url:localUrl+"type/rar.png"});break;
+                case "txt": img_list.push({name:attach[i],url:localUrl+"type/txt.png"});break;
+                case "doc": img_list.push({name:attach[i],url:localUrl+"type/word.png"});break;
+                case "ppt": img_list.push({name:attach[i],url:localUrl+"type/ppt.ppt"});break;
+                case "pdf": img_list.push({name:attach[i],url:localUrl+"type/pdf.png"});break;
+                case "psd": img_list.push({name:attach[i],url:localUrl+"type/psd.png"});break;
+                default: img_list.push({name:attach[i],url:localUrl+"type/file2.png"});break;
+            }
+
+        }
+
+    };
+    var app = new Vue({
+        el: '#app',
+        data: {
+            loading:true,
+            info: info,
+            relicArea:[],
+            img_list:img_list,
+            dialogVisible: false,
+            imgVisible:false,
+            tinymceEditer: false,
+            age: [{label: "青铜", value: '1'}, {label: "新石器", value: '2'}],
+            category: [{label: "山岗", value: '1'}, {label: "台地", value: '2'}, {label: "坡地", value: '3'}, {
+                label: "岛屿",
+                value: '4'
+            }],
+            dialogImageUrl:'',
+            map:{},
+            survey:[],
+            newSurvey:{survey_name:"",region_id:this.info.id,region_name:this.info.name,survey_info:"",region_version:this.info.version,survey_status:0},
+            editSurvey:{},
+            modalSurvey:false,
+            modalSurveyEdit:false,
+            modalSurveyView:false,
+            points:[],
+            fileName:'',
+            rulesSur: {
+                survey_name: [
+                    { required: true, message: '请输入勘察名称', trigger: 'blur' },
+                ]
+            },
+            rules: {
+                  name: [
+                    { required: true, message: '遗址名称不能为空', trigger: 'blur' },
+                  ],
+                  category: [
+                    { required: true,trigger: 'change' }
+                  ],
+                  age: [
+                    { required: true, trigger: 'change' }
+                  ],
+                  altitude: [
+                    {type:'number',message: '海拔必须为数字值', trigger: 'blur' },
+                  ],
+                  acreage: [
+                    {type:'number',message: '面积必须为数字值', trigger: 'blur' },
+                  ],
+                  reHeight: [
+                    {type:'number',message: '高度必须为数字值', trigger: 'blur' },
+                  ],
+                  areaId: [
+                    { required: true, trigger: 'blur' }
+                  ],
+                //   lat: 
+                //     {type: "object",required: true,trigger: 'blur',fields: {
+                //       latD: {type: "number", required: true},
+                //       latF: {type: "number", required: true},
+                //       latM: {type: "number", required: true}
+                //     } 
+                //     }
+                //   ,
+                //   lng: [
+                //     { type:'number',message: '纬度必须为数字值', trigger: 'blur' }
+                //   ],
+                  address: [
+                    {  trigger: 'blur' }
+                  ],
+                  towns: [
+                    {   trigger: 'blur' }
+                  ]
+                }
+        },
+        computed: {
+
+        },
+        watch:{
+        },
+        mounted:function () {
+            //获取区域列表
+            axios.post("/getRelicArea").then((res) => {
+                if (res.data.length > 0) {
+
+                    this.relicArea = res.data;
+
+                    this.relicSelect = this.info.areaId
+                }
+
+            })
+            axios.post("/relicSurvey",{id:this.info.id,region_version:this.info.version}).then((res)=>{
+                if(res.data.status==200){
+                    this.survey=res.data.tempData;
+                }
+
+            });
+
+            this.initEdit();
+        },
+        methods: {
+            back(){
+                window.history.back()
+            },
+            addSave(type,formName){
+                debugger
+                this.$refs[formName].validate((valid) => {
+                  if (valid) {
+                        if(type){
+                            axios.post("/relicManEditUpdate", this.info).then((res) => {
+                                this.$message({message:res.data.message,type:"success",duration:1500,onClose:()=>{window.location.href="/relicMan"}});
+                                })
+                        }else{
+                            axios.post("/relicManEditSave", this.info).then((res) => {
+                                this.$message({message:res.data.message,type:"success",duration:1500,onClose:()=>{window.location.href="/relicMan"}});
+                            })
+                        }
+                  } else {
+                    this.$message.error('error submit!!');
+                    return false;
+                  }
+                });
+
+            },
+            change_status(v) {
+                this.info.areaId = v;
+                this.map = this.relicArea.find((value) => {
+                    return value.id == v
+                });
+                var points = [];
+                JSON.parse(this.map.area_position).forEach((value, index) => {
+                    points.push(new BMap.Point(value.lng, value.lat));
+                })
+                this.points=points;
+            },
+            initEdit() {
+                this.$nextTick(() => {
+                    let vm = this;
+                    let height = document.body.offsetHeight - 300;
+                    tinymce.init({
+                        selector: '#tinymceEditer',
+                        branding: false,
+                        encoding:"html",
+                        upload_image_url: '/areaUpload',
+                        elementpath: false,
+                        height: height,
+                        language: 'zh_CN',
+                        autoresize_bottom_margin: 50,
+                        menubar: 'edit insert view format table tools',
+                        plugins: [
+                            'advlist autolink lists link image charmap print preview hr anchor pagebreak imagetools',
+                            'searchreplace visualblocks visualchars code fullpage',
+                            'insertdatetime media nonbreaking save table contextmenu directionality',
+                            'emoticons paste textcolor colorpicker textpattern imagetools codesample uploadimage autoresize'
+                        ],
+                        toolbar: ' newnote print preview | undo redo | insert | styleselect | forecolor backcolor bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image emoticons media codesample| uploadimage',
+                        autosave_interval: '20s',
+                        image_advtab: true,
+                        table_default_styles: {
+                            width: '100%',
+                            borderCollapse: 'collapse'
+                        },
+                        setup: function (editor) {
+                            editor.on('init', function (e) {
+                                vm.spinShow = false;
+                                if (!isEmpty(app.info.content)) {
+                                    tinymce.get('tinymceEditer').setContent(decodeURI(app.info.content));
+                                }
+                                vm.loading = false;
+                                // else if(localStorage.editorContent){
+                                //     tinymce.get('tinymceEditer').setContent(localStorage.editorContent);
+                                // }
+                            });
+                            editor.on('keyup', function (e) {
+                                //localStorage.editorContent = tinymce.get('tinymceEditer').getContent();
+                                app.info.content=encodeURI(tinymce.get('tinymceEditer').getContent());
+                            });
+                        }
+                    });
+                });
+            },
+            initMap() {
+                this.$nextTick(() => {
+                    var map = new BMap.Map("bmap", {enableMapClick: false});
+                    map.centerAndZoom(new BMap.Point(118.15045, 24.495434), 13);
+                    map.addControl(new BMap.MapTypeControl());
+                    map.setCurrentCity("厦门");
+                    map.enableScrollWheelZoom(true);
+                    // map.addEventListener("click", (e) => {
+                    //     if (typeof marker != "undefined") {
+                    //         map.removeOverlay(marker);
+                    //     }
+                    //     this.info.lat = e.point.lat;
+                    //     this.info.lng = e.point.lng;
+                    //     var point = new BMap.Point(e.point.lng, e.point.lat);
+                    //     marker = new BMap.Marker(point);
+                    //     map.addOverlay(marker);
+                    //     this.dialogVisible=false;
+                    // });
+                        var lat =ChangeToDu(this.info.lat.latD,this.info.lat.latF,this.info.lat.latM);
+                        var lng =ChangeToDu(this.info.lng.lngD,this.info.lng.lngF,this.info.lng.lngM);
+                        var point = new BMap.Point(lng, lat);
+                        var marker = new BMap.Marker(point);
+                        map.addOverlay(marker);
+                        map.setCenter(point);
+                    var points=this.points;
+                    //map.clearOverlays();
+                    var polygon = new BMap.Polygon(points, {
+                        strokeColor: "#1E9FFF",
+                        strokeWeight: 2,
+                        strokeOpacity: 0.8
+                    }); //创建多边形
+                    map.addOverlay(polygon);
+                })
+
+            },
+            delSurvey(id,index){
+                this.$confirm("确认删除","提示",{lockScroll:false},()=> {
+                    axios.post("/relicSurveyDel", {id: id}).then((res) => {
+                        if (res.data.status === 200) {
+                            this.$message.success(res.data.message);
+                            this.survey.splice(index, 1)
+                        } else {
+                            this.$message.error(res.data.message)
+                        }
+
+                    })
+                })
+            },
+            addSurvey(){
+                this.modalSurvey = true
+            },
+            surveyEdit(id){
+                this.editSurvey=this.survey.find((v)=>{
+                    return v.id==id
+                })
+                this.modalSurveyEdit = true;
+            },
+            compSurvey(id){
+                this.$confirm("确认完成","提示",{lockScroll:false},()=> {
+                    axios.post("/relicSurveyComp", {id: id}).then((res) => {
+                        if (res.data.status === 200) {
+                            this.$message.success(res.data.message);
+                            this.survey.find((v) => {
+                                return v.id == id
+                            }).survey_status = 1;
+                        } else {
+                            this.$message.error(res.data.message)
+                        }
+
+                    })
+
+                })
+            },
+            addSurveySave(){
+                axios.post("/relicSurveyAddSave", this.newSurvey).then((res) => {
+                    if (res.data.status === 200) {
+                        this.$message.success(res.data.message);
+                        axios.post("/relicSurvey",{id:this.info.id}).then(res=>{
+                            this.survey=res.data.tempData;
+                            this.modalSurvey=false
+                        })
+                    } else {
+                        this.$message.error(res.data.message)
+                    }
+
+                })
+            },
+            editSurveySave(){
+                axios.post("/relicSurveyEditSave", this.editSurvey).then((res) => {
+                    if (res.data.status === 200) {
+                        this.$message.success(res.data.message);
+                        axios.post("/relicSurvey",{id:this.info.id}).then(res=>{
+                            this.survey=res.data.tempData;
+                            this.modalSurveyEdit=false;
+                        })
+                    } else {
+                        this.$message.error(res.data.message)
+                    }
+
+                })
+            },
+            viewSurvey(id){
+                this.editSurvey=this.survey.find((v)=>{
+                    return v.id==id
+                })
+                this.modalSurveyView = true;
+            },
+            handleRemove(file, fileList) {
+                this.$message.success("删除成功");
+                var a=[];
+                fileList.forEach((v)=>{
+                    a.push(v.response.file.filename)
+                })
+                this.info.attach=a.join(",");
+            },
+            handlePictureCardPreview(file) {
+                this.fileName=file.name;
+                this.dialogImageUrl = file.url;
+                this.imgVisible = true;
+            },
+            handleSuccess(response, file, fileList){
+                var a=attach;
+                if(response.status===200){
+                    this.$message.success("上传成功")
+                    fileList.forEach((v)=>{if(v.response){a.push(v.response.file.filename)}})
+                }
+                this.info.attach=a.join(",");
+            },
+            download(file){
+                window.location.href="/download?file="+file;
+            },
+        }
+    })
+</script>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=zAIhGUla2lYZjuOjApmsHuMa9Mom0ODn"></script>

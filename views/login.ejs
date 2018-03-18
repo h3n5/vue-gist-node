@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+	<meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+	<meta http-equiv="Cache-Control" content="no-siteapp"/>
+	<title>遗址管理系统</title>
+	<link rel="stylesheet" href="assets/css/fonts/fontawesome/css/font-awesome.min.css">
+	<link rel="stylesheet" href="assets/css/bootstrap.css">
+
+	<script src="js/jquery-3.3.1.min.js" type="text/javascript"></script>
+	<style>
+		body{color:#fff; font-family:"Microsoft YaHei"; font-size:14px;background:url(assets/images/login/bg.jpg) no-repeat;}
+		.wrap1{height:600px;position:absolute; top:0; right:0; bottom:0; left:0; margin:auto }/*把整个屏幕真正撑开--而且能自己实现居中*/
+		.main_content{background:url(assets/images/login/main_bg.png) repeat; margin-left:auto; margin-right:auto; text-align:left; float:none; border-radius:8px;}
+		.form-group{position:relative;}
+		.login_btn{display:block; background:#3872f6; color:#fff; font-size:18px; width:100%; line-height:50px; border-radius:3px; border:none; }
+		.login_input{width:100%; border:1px solid #eeeeee; border-radius:3px; line-height:40px; padding:2px 5px 2px 30px; background:none;}
+		.icon_font{position:absolute; bottom:15px; left:10px; font-size:18px; color:#ffffff;}
+		.mg-t20{margin-top:20px;}
+		@media (min-width:200px){.pd-xs-20{padding:20px;}}
+		@media (min-width:768px){.pd-sm-50{padding:50px;}}
+		*[class*="fa-"] {
+			display: inline-block;
+			font: normal normal normal 14px/1 FontAwesome;
+			font-size: inherit;
+			text-rendering: auto;
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+		}
+	</style>
+</head>
+<body>
+<div class="container wrap1">
+	<h2 class="text-center" style="margin:20px;font-size: 31px; font-weight:bold;color:#555">遗址管理系统</h2>
+	<div class="col-sm-8 col-md-5 center-auto pd-sm-50 pd-xs-20 main_content">
+			<div class="form-group mg-t20">
+				<i class="fa-desktop icon_font"></i>
+				<input id="companyName" name="companyName" value="厦门市" class="login_input"  type="text" placeholder="请输入公司名称">
+			</div>
+			<div class="form-group mg-t20">
+				<i class="fa-user icon_font"></i>
+				<input id="username" name="loginName" value="sm" class="login_input"  type="text" placeholder="请输入登录名">
+			</div>
+			<div class="form-group mg-t20">
+				<i class="fa-key icon_font"></i>
+				<input id="pswd" name="pswd" value="sm123456" class="login_input" value="" type="password" placeholder="请输入密码">
+			</div>
+			<div class="checkbox mg-b25">
+				<label>
+					<input type="checkbox" />记住我的登录信息
+				</label>
+			</div>
+			<button  id="login" class="login_btn">登 录</button>
+	</div><!--row end-->
+</div><!--container end-->
+</body>
+<script>
+    $("#login").click(function(){
+        loginCheck();
+    })
+    $(document).on("keydown",function(e){
+        if(e.keyCode==13){
+            loginCheck()
+        }
+    })
+    function loginCheck() {
+        var postData={}//定义数据json
+        postData.companyName=$.trim($("input[name='companyName']").val());
+        postData.loginName=$.trim($("input[name='loginName']").val());
+        postData.pswd=$.trim($("input[name='pswd']").val());
+
+        if(postData.companyName==""||postData.loginName==""||postData.pswd==""){
+            alert("请填写完整！")
+            return;
+        }
+        $.post("/loginCheck",{"postData":JSON.stringify(postData)},
+            function(data){
+                if(data.status=="ok"){
+                    window.location =data.url;
+                }else{
+                    alert("用户或密码错误!");
+                }
+            },"json");
+
+    }
+</script>
+</html>

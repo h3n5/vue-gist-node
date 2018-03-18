@@ -1,0 +1,170 @@
+<%- include("../template/head.ejs",{title:"历史影像"}) %>
+<script src="./plugins/ol/ol.js"></script>
+<style>
+    body,html,#app{
+        height:100%
+    }
+    #map{
+        height: 100%;
+        width: 100%;
+    }
+    .step{
+        width:300px;
+        display:inline-block;
+        vertical-align:bottom;
+    }
+    .mapControl{
+        position:fixed;
+        padding:10px;
+        z-index:999;
+        background-color:rgba(242,242,242,0.8);
+        border-radius:10px;
+        top:50px;
+        left:50px
+    }
+</style>
+<body class="pd15Iner">
+<div id="app" v-cloak>
+    <div class="mapControl">
+    <el-slider
+    v-model="value"
+    :step="30"
+    :max="90"
+    class='step'
+    @change="slider"
+    :format-tooltip="formatTooltip">
+    </el-slider>
+    <el-checkbox v-model="checked3" label="道路层" border @change="mapReset0"></el-checkbox>
+    <el-checkbox v-model="checked4" label="图像层" border @change="mapReset1"></el-checkbox>
+    </div>
+    <div class="widthBlock" id="map">
+    </div>
+
+   
+</div>
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: { 
+            value:0,
+            mapUrl:["1984_wp","1984_tag"],
+            mapUrl2:["2002_wp","2002_tag"],
+            mapUrl3:["2016_wp","2016_tag"],
+            choose:[],
+            serverUrl:"http://192.168.4.108:8080/",
+            checked3:true,
+            checked4:true
+        },
+        mounted(){
+            this.initMap();
+        },
+        methods:{
+            initMap(){
+                // var wfs = new OpenLayers.Layer.Vector("WFS", {
+                //     strategies: [new OpenLayers.Strategy.Fixed()],
+                //     projection: new OpenLayers.Projection("EPSG:4326"),
+                //     protocol: new OpenLayers.Protocol.WFS({
+                // version : "1.0.0",
+                // url:  "http://192.168.4.139:8080/geoserver/tssdgx/wfs",
+                // featureType: "Continents",
+                // featurePrefix : "tssdgx",
+                // featureNS: "http://www.tssdgx.com",
+                // srsName : "EPSG:3857",
+                // geometryName:"10mi"
+                //     })
+                // });
+
+                baseMap = new ol.layer.Group();
+                map = new ol.Map({
+                  target: 'map',
+                  controls: [new ol.control.ScaleLine()],
+                  layers: [baseMap],
+                    view: new ol.View({
+                        center: ol.proj.fromLonLat([119.41, 26.02]),
+                        //extent: [118, 26, 120, 37],
+                        zoom: 10,
+                        minZoom: 10,
+                        // maxZoom: 14,
+                    })
+                });
+                lyr = new ol.layer.Tile({
+                            source:new ol.source.TileWMS({
+                                        extent:[112,22,114,24],
+                                        params:{
+                                            'LAYERS':'tssdgx:10mi',
+                                            'VERSION':'1.1.0',
+                                            'BBOX':[113.029319763184,22.7097873687744,113.95068359375,23.7140617370605],
+                                            'CRS':'EPSG:3857',
+                                            'WIDTH':704,
+                                            'HEIGHT':768
+                                        },
+                                        projection:"EPSG:3857",
+                                        url:"http://192.168.4.139:8080/geoserver/tssdgx/wms"
+                                        })
+                                });
+                                map.addLayer(lyr)
+                this.changeLayer();
+
+            },
+            changeLayer(type){
+                if(type){
+                var defaultBaseMap = new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                });
+                baseMap.setLayers(new ol.Collection([defaultBaseMap]));
+                }else{
+                var mapUrl= this.choose.length>0?this.choose:this.mapUrl;
+                var arr=[]
+                mapUrl.forEach((v)=>{
+                    var customBaseMap = new ol.layer.Tile({
+                        source: new ol.source.XYZ({
+                            url: this.serverUrl+v+"/{z}/{x}/{y}.png"
+                        })
+                    });
+                    arr.push(customBaseMap);
+                })
+                baseMap.setLayers(new ol.Collection(arr));
+                }
+            },
+            slider(v){
+                switch(v/30){
+                    case 0:this.choose=this.mapUrl;this.changeLayer();break;
+                    case 1:this.choose=this.mapUrl2;this.changeLayer();break;
+                    case 2:this.choose=this.mapUrl3;this.changeLayer();break;
+                    default:this.choose=this.mapUrl3;this.changeLayer(1);break
+                }
+            },
+            formatTooltip(v){
+                switch(v/30){
+                    case 0:return 1984+"年";
+                    case 1:return 2002+"年";
+                    case 2:return 2016+"年";
+                    default:return 2017+"~年";
+                }
+            },
+            mapReset0(curval){
+                if(!curval){
+                    var mapUrl= this.choose.length>0?this.choose:this.mapUrl;
+                    var arr=[]
+                    mapUrl.forEach((v)=>{
+                        var customBaseMap = new ol.layer.Tile({
+                            source: new ol.source.XYZ({
+                                url: this.serverUrl+v+"/{z}/{x}/{y}.png"
+                            })
+                        });
+                        arr.push(customBaseMap);
+                    })
+                    console.log(arr.length)
+                    baseMap.setLayers(new ol.Collection(arr[0]));
+                }else{
+                    this.changeLayer()
+                }
+
+            },
+            mapReset1(curval){
+                console.log(curval)
+            }
+        }
+    })
+</script>

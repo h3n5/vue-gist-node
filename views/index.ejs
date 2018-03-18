@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <title>遗址GIS</title>
+    <link rel="stylesheet" href="assets/css/fonts/fontawesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/css/bootstrap.css">
+    <link rel="stylesheet" href="assets/css/hz-core.css">
+    <script src="assets/js/jquery-1.11.1.min.js"></script>
+    <!--[if lt IE 9]>
+    <script src="assets/js/html5shiv.min.js"></script>
+    <script src="assets/js/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body class="page-body">
+<div class="page-container">
+    <div class="sidebar-menu toggle-others fixed">
+        <div class="sidebar-menu-inner">
+            <header class="logo-env">
+                <!-- logo -->
+                <div class="logo">
+                    <a href="javascript:;" class="logo-expanded"><img src="assets/images/logo.png"  width="120" alt=""/></a>
+                    <a href="javascript:;" class="logo-collapsed"><img src="assets/images/logo_coll.png"  width="30" alt=""/></a>
+                </div>
+            </header>
+            <ul id="main-menu" class="main-menu">
+                <li>
+                    <a href="javascript:;" onClick="openNewtabs(this,'/relicArea','遗址区域')"> <i class="fa-desktop"></i> <span class="title">遗址区域</span> </a>
+                </li>
+                <li><a href="javascript:;" onClick="openNewtabs(this,'/relicMan','遗址管理')"><i class="fa fa-car" aria-hidden="true"></i> <span class="title">遗址管理</span> </a>
+                </li>
+                <li><a href="javascript:;" onClick="openNewtabs(this,'/relicHistory','历史版本')"><i class="fa fa-university" aria-hidden="true"></i> <span class="title">历史版本</span> </a>
+                </li>
+                <li><a href="javascript:;" onClick="openNewtabs(this,'/historyMap','历史影像')"><i class="fa fa-user-md text-center" aria-hidden="true"></i> <span class="title">历史影像</span> </a>
+                </li>
+                <li><a href="javascript:;"> <i class="fa-gear"></i> <span class="title">基础管理</span> </a>
+                    <ul class="childMenu">
+                        <li><a href="javascript:;" onClick="openNewtabs(this,'/sys_setting','配置管理')">配置管理</a></li>
+                        <li><a href="javascript:;" onClick="openNewtabs(this,'/plat_setting','平台管理')">平台管理</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="main-content">
+        <nav class="navbar user-info-navbar" role="navigation">
+            <ul class="user-info-menu left-links list-inline list-unstyled">
+                <li><i style="height:57px; display:block;"></i></li>
+                <li class="hidden-xs hover-line"><a id="sidebar" href="#" data-toggle="sidebar" > <i class="fa-bars"></i> </a></li>
+            </ul>
+            <ul class="user-info-menu right-links list-inline list-unstyled">
+                <li class="dropdown user-profile"><a href="#" data-toggle="dropdown"> <img
+                                src="assets/images/user-4.png" alt="user-image" class="img-circle img-inline userpic-32"
+                                width="28"/> <span> <i class="fa-angle-down"></i> </span> </a>
+                    <ul class="dropdown-menu user-profile-menu list-unstyled">
+                        <li onClick="openNewtabs(this,'/sys_passSetting','密码设置')"><a href="javascript:;"> <i
+                                        class="fa-wrench"></i> 密码设置 </a></li>
+                    </ul>
+                </li>
+                <li><a href="/"><i class="fa-sign-out"></i><span>退出</span> </a></li>
+            </ul>
+        </nav>
+        <div class="page-title hide">
+            <div class="breadcrumb-env">
+                <ol class="breadcrumb bc-1">
+                    <li><i class="fa-bookmark-o"></i>监测管理</li>
+                    <li class="active"><strong>实时信息</strong></li>
+                </ol>
+            </div>
+        </div>
+        <div class="tabs_span">
+            <div class="tabs_span_iner">
+                <ul class="tabsUL">
+                    <li class="tab_sed"><a href="javascript:;" src="home.html">主 页</a></li>
+                </ul>
+            </div>
+            <div class="tabsMore"><a href="#" id="js-tabNav-prev"></a><a href="#" id="js-tabNav-next"></a></div>
+            <a href="javascript:;" class="reload"><i class="fa fa-refresh" aria-hidden="true"></i></a>
+        </div>
+        <div id="tabs_iframe" class="tabs_iframe">
+            <div class="tabsIframeBlock block">
+                <iframe id="frameCon" class="frameCon" scrolling="yes" src="/main" frameborder="0"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Bottom Scripts -->
+<script src="assets/js/bootstrap.min.js"></script>
+<script src="assets/js/TweenMax.min.js"></script>
+<script src="assets/js/hz_resizeable.js"></script>
+<script src="assets/js/hz_toggles.js"></script>
+<link rel="stylesheet" href="assets/plugins/scroll/jquery.mCustomScrollbar.css">
+<script src="assets/plugins/scroll/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/hz_app.js"></script>
+<script>
+    (function ($) {
+        var menu=$(".childMenu");
+        for(var i=0;i<menu.length;i++){
+            if(menu.eq(i).children("li").length===0){
+                menu.eq(i).parent().hide();
+            }
+        }
+        $(window).on("load", function () {
+                $(".sidebar-menu-inner").mCustomScrollbar({
+                theme: "minimal"
+            });
+
+            $("#sidebar").click(function(){
+                if($(".mCustomScrollBox").length!=0){
+                    $(".sidebar-menu-inner").mCustomScrollbar("destroy");
+                }else{
+                    $(".sidebar-menu-inner").mCustomScrollbar({
+                        theme: "minimal"
+                    });
+                }
+                $(".childMenu").removeAttr("style");
+                $(".has-sub").removeClass("expanded");
+            });
+
+        });
+    })(jQuery);
+</script>
+</body>
+</html>

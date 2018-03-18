@@ -1,0 +1,251 @@
+<%- include("./template/head.ejs",{title:"主页",css:[],js:["echart/echarts.common.min",'echart/macarons'],reload:true}) %>
+<style>
+    #app {
+        width: 100%;
+        height: 100%;
+        background-color: #EEEEEE;
+    }
+    .loginInfo{
+        margin-top: 10px;
+        border-top: 2px solid #eee;
+        padding-top: 5px;
+    }
+</style>
+<body class="pd15Iner">
+<div id="app">
+    <Row :gutter="16" >
+        <i-col span="8">
+            <Card>
+                <Row>
+                    <i-col span="8">
+                        <img src="../images/userHead.png">
+                    </i-col>
+                    <i-col span="16">
+                        <h3>Admin</h3>
+                        <p>超级管理员</p>
+                        <p>厦门公司</p>
+                        <p>市场部</p>
+                    </i-col>
+                </Row>
+                <row class="loginInfo">
+                    <i-col span="12">
+                        <p>上次登录时间：</p>
+                    </i-col>
+                    <i-col span="12">
+                        <p>2018-09-12</p>
+                    </i-col>
+                    <i-col span="12">
+                        <p>上次登录地点：</p>
+                    </i-col>
+                    <i-col span="12">
+                        <p>厦门</p>
+                    </i-col>
+                </row>
+            </Card>
+            <Card class="mt15">
+                    <p slot="title">
+                        <Icon type="android-checkbox-outline"></Icon>
+                        新的审核
+                    </p>
+                    <a href="#" slot="extra" @click.prevent="refresh">
+                        <Icon type="refresh"></Icon>
+                        refresh
+                    </a>
+                    <ul>
+                        <li v-for="(item,index) in randomMovieList">
+                            <span>{{index+1+"."+item.name}}</span>
+                        </li>
+                    </ul>
+            </Card>
+            <Card class="mt15">
+                <Row>
+                    <i-col span="8">
+                        <img src="../images/userHead.png">
+                    </i-col>
+                    <i-col span="16">
+                        <h3>Admin</h3>
+                        <p>超级管理员</p>
+                        <p>厦门公司</p>
+                        <p>市场部</p>
+                    </i-col>
+                </Row>
+                <row class="loginInfo">
+                    <i-col span="12">
+                        <p>上次登录时间：</p>
+                    </i-col>
+                    <i-col span="12">
+                        <p>2018-09-12</p>
+                    </i-col>
+                    <i-col span="12">
+                        <p>上次登录地点：</p>
+                    </i-col>
+                    <i-col span="12">
+                        <p>厦门</p>
+                    </i-col>
+                </row>
+            </Card>
+        </i-col>
+        <i-col span="16">
+            <img src="./images/shouye.jpg" alt="" style="width:100%">
+        </i-col>
+
+    </Row>
+    <row :gutter="16" class="mt15">
+        <i-col span="8">
+            <Card>
+                <p slot="title">The standard card</p>
+                <div id="chart1" style="width:95%;height:200px;"></div>
+            </Card>
+        </i-col>
+        <i-col span="8">
+            <Card>
+                <p slot="title">某站点用户访问来源</p>
+                <div id="chart2" style="width:95%;height:200px;"></div>
+            </Card>
+        </i-col>
+        <i-col span="8">
+            <Card>
+                <p slot="title">The standard card</p>
+                <div id="chart3" style="width:95%;height:200px;"></div>
+            </Card>
+        </i-col>
+    </row>
+</div>
+
+</body>
+<script type="text/javascript">
+    var app = new Vue({
+        el: '#app',
+        data: {
+            randomMovieList:[{name:"厦门区域的更新"},{name:"厦门区域的更新"},{name:"厦门区域的更新"}]
+        },
+        computed: {},
+        watch: {},
+        mounted:function () {
+            // $("#chart").css( 'width', $("#chart").width() );
+            // $("#chart").resize()
+            var myChart1 = echarts.init($('#chart1').get(0), 'macarons');
+            var option1 = {
+                title: {
+                    text: '',
+                    subtext: ''
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                legend: {
+                    data: ["本周"],
+                    show:false,
+                },
+                grid: {
+                    top:0,
+                    left: 0,
+                    right: '2%',
+                    bottom: 0,
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'value',
+                    // boundaryGap: [0, 0.01]
+                },
+                yAxis: {
+                    type: 'category',
+                    data: ['sun','mon','tue','wes','thr','fri',"sas"]
+                },
+                series: [
+                    {
+                        name: '本周',
+                        type: 'bar',
+                        data: [1803, 3489, 3034, 1970, 1744, 3330,2803]
+                    }
+                ]
+            };
+            myChart1.setOption(option1);
+            var myChart2 = echarts.init($('#chart2').get(0), 'macarons');
+            var option2 = {
+                title : {
+                    text: '',
+                    subtext: '纯属虚构',
+                    x:'center'
+                },
+                tooltip : {
+                    trigger: 'item',
+                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+                },
+                grid: {
+                    top:0,
+                    left: 0,
+                    right: '2%',
+                    bottom: 0,
+                    containLabel: true
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 'left',
+                    data: ['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
+                },
+                series : [
+                    {
+                        name: '访问来源',
+                        type: 'pie',
+                        radius : '55%',
+                        center: ['50%', '60%'],
+                        data:[
+                            {value:335, name:'直接访问'},
+                            {value:310, name:'邮件营销'},
+                            {value:234, name:'联盟广告'},
+                            {value:135, name:'视频广告'},
+                            {value:1548, name:'搜索引擎'}
+                        ],
+                        itemStyle: {
+                            emphasis: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        }
+                    }
+                ]
+            };
+            myChart2.setOption(option2);
+            var myChart3 = echarts.init($('#chart3').get(0), 'macarons');
+            var option3 = option = {
+                xAxis: {
+                    type: 'category',
+                    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                },
+                grid: {
+                    top:'2%',
+                    left: 0,
+                    right: '2%',
+                    bottom: 0,
+                    containLabel: true
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [{
+                    data: [820, 932, 901, 934, 1290, 1330, 1320],
+                    type: 'line'
+                }]
+            };
+
+            myChart3.setOption(option3);
+
+        },
+        methods: {
+            refresh(){
+                const title = 'Title';
+                const content = '<p>Content of dialog</p><p>Content of dialog</p>';
+                this.$Modal.success({
+                    title: title,
+                    content: content,
+                    scrollable:true
+                });
+            }
+        }
+    })
+</script>

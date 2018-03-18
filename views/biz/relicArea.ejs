@@ -1,0 +1,111 @@
+<%- include("../template/head.ejs",{title:"遗址区域"}) %>
+<style>
+    .br{
+        float: right;
+        padding: 0;
+        margin-left: 5px;
+    }
+    .title{
+        font-weight:bold;
+    }
+.pageStyle1{
+    position:fixed;
+    bottom:20px;
+    right:20px;
+}
+</style>
+<body class="pd15Iner">
+<div id="app" v-cloak>
+    <div class="widthBlock">
+            <div class="fr">
+                <el-button type="primary" @click="addArea">增加</el-button>
+            </div>
+            <el-form :inline="true"  class="demo-form-inline form-item-clearMarign" @submit.native.prevent>
+                <el-form-item label="">
+                    <el-input placeholder="输入区域名称搜索" v-model="base.search.area_name" @keyup.enter.native="search"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="search">查询</el-button>
+                </el-form-item>
+            </el-form>
+    </div>
+    <div class="widthBlock mt15" style="background:#eee;padding:15px 0">
+        <el-Row :gutter="20" v-loading="base.loading" style="min-height:450px">
+            <el-Col :span="6" v-for="(value,index) in info" :key="value.id" style="margin-bottom:20px">
+                <el-Card :bordered=true>
+                    <span class="title" slot="header">{{value.area_name}}</span>
+                    <el-button class="br" type="text" slot="header" icon="el-icon-edit" @click="edit(value.id)">编辑
+                    </el-button>
+                    <el-button class="br"  type="text" slot="header" icon="el-icon-delete"
+                               @click="del(value.id,index)">删除
+                    </el-button>
+                    <p class="mb5">所属的遗迹数量：{{value.num}}个</p>
+                    <p>备注：{{value.remark}}</p>
+                </el-Card>
+            </el-Col>
+        </el-Row>
+        <%- include("../template/page_1.ejs") %>
+    </div>
+</div>
+</body>
+<script>
+    <% tempData.forEach((v) => {
+        v.area_position = JSON.parse(v.area_position)
+    }) %>
+    var pageInfo=JSON.parse('<%-JSON.stringify(pageInfo)%>');
+    var app = new Vue({
+        el: '#app',
+        data: {
+            info: JSON.parse('<%- JSON.stringify(tempData) %>'),
+            base:{
+                tmpData:{},
+                page:pageInfo,
+                search:{area_name:""},
+                opUrl:{list:"/relicArea"},
+                loading:false
+            }      
+        },
+        methods: {
+            edit: function (id) {
+                window.location.href = "/relicAreaEdit?id=" + id;
+            },
+            del: function (id, index) {
+                this.$confirm('确认删除?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    lockScroll:false
+                  }).then(() => {
+                    axios.post("/listDel", {id: id}).then((res) => {
+                        if (res.data.status === 200) {
+                            this.$message({type: 'success',message:res.data.message});
+                            this.info.splice(index, 1)
+                        } else {
+                            this.$message.error(res.data.message)
+                        }
+                    })
+                  })
+
+
+            },
+            addArea: function () {
+                window.location.href = "/relicAreaAdd";
+            },
+            search() {
+                axios.get("/relicArea?search="+JSON.stringify(this.base.search)+"&type=1").then((res) => {
+                        this.$message("共找到" + res.data.tempData.length + "个区域");
+                        this.info = res.data.tempData;
+                        this.base.page=res.data.pageInfo;
+                })
+            },
+            curPageChange(val){
+                this.base.loading=!this.base.loading;
+                axios.get(this.base.opUrl.list+"?curPage="+val+"&search="+JSON.stringify(this.base.search)+"&type=1").then((res)=>{
+                    this.base.page=res.data.pageInfo;
+                    this.info=res.data.tempData;
+                    this.base.loading=!this.base.loading;
+                })
+            }
+        }
+    })
+</script>

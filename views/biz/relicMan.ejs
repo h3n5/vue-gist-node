@@ -1,0 +1,155 @@
+<%- include("../template/head.ejs",{title:"遗址区域"}) %>
+<style>
+.pageStyle1{
+    position:fixed;
+    bottom:20px;
+    right:20px;
+}
+</style>
+    <body class="pd15Iner">
+    <div id="app" v-cloak>
+        <div class="widthBlock">
+        <div class="fr">
+            <el-button type="primary" @click="add">增加</el-button>
+        </div>
+        <el-form :inline="true"  class="demo-form-inline form-item-clearMarign" @submit.native.prevent>
+            <el-form-item label="">
+                <el-input placeholder="输入名称搜索" v-model="base.search.name" @keyup.enter.native="search"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="search">查询</el-button>
+            </el-form-item>
+        </el-form>
+    </div>
+        <div class="widthBlock">
+        <el-table 
+            :data="info"
+            stripe=""
+            style="min-height:450px"
+            border>
+            <el-table-column type="index" label="序号" width="60" align="center"></el-table-column>
+            <el-table-column prop="name" label="名称" align="center"></el-table-column>
+            <el-table-column prop="address" label="地址" width="200" align="center"></el-table-column>
+            <el-table-column prop="altitude" label="海拔(m)" align="center"></el-table-column>
+            <el-table-column prop="altitude" label="面积(㎡)" align="center"></el-table-column>
+            <el-table-column prop="altitude" label="经度" align="center">
+                <template slot-scope="scope">
+                <span>{{ translate2Lng(scope.$index) }}</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="altitude" label="纬度" align="center">
+            <template slot-scope="scope">
+            <span>{{ translate2Lat(scope.$index) }}</span>
+            </template>
+            </el-table-column>
+            <el-table-column prop="area_name" label="流域" align="center"></el-table-column>
+            <el-table-column prop="age" label="年代" align="center">
+                <template slot-scope="scope">
+                <span>{{ scope.row.age==1?"青铜":"新石器" }}</span>
+                </template>
+            </el-table-column>
+            <el-table-column  label="创建时间" align="center" width="150">
+                <template slot-scope="scope">
+                <span>{{ scope.row.createTime.slice(0,10) }}</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="approName" label="审核人" align="center">
+            <template slot-scope="scope">
+            <span>{{ (scope.row.approName==""||scope.row.approName==null)?"未审核":scope.row.approName }}</span>
+            </template>
+            </el-table-column>
+            <el-table-column label="操作" align="center" width="200">
+                    <template slot-scope="scope">
+                    <a  href="javascript:;"  @click="view(scope.row.id)">查看 |</a>
+                    <a v-if="!scope.row.approId" href="javascript:;"  @click="edit(scope.row.id,0)">编辑 |</a>
+                    <a v-if="!scope.row.approId" href="javascript:;"  @click="del(scope.row.id,scope.$index)">删除 |</a>
+                    <a v-if="!scope.row.approId" href="javascript:;"  @click="verify(scope.row.id)">审核</a>
+                    <a v-if="scope.row.approId" href="javascript:;"  @click="edit(scope.row.id,1)">更新</a>
+                    </template>
+            </el-table-column>
+        </el-table>
+        <%- include("../template/page_1.ejs") %>
+        </div>
+</div>
+</body>
+<script>
+    <%tempData.forEach((v)=>{v.lat=JSON.parse(v.lat);v.lng=JSON.parse(v.lng);})%>
+    var pageInfo=JSON.parse('<%-JSON.stringify(pageInfo)%>');
+    var app = new Vue({
+        el: '#app',
+        data: {
+            info:JSON.parse('<%-JSON.stringify(tempData)%>'),
+            base:{
+                tmpData:{},
+                page:pageInfo,
+                search:{name:""},
+                opUrl:{list:"/relicMan"},
+                loading:false
+            }
+        },
+        computed: {
+        },
+        methods:{
+            translate2Lat:function (i) {
+                return ChangeToDu(this.info[i].lat.latD,this.info[i].lat.latF,this.info[i].lat.latM)
+            },
+            translate2Lng:function (i) {
+                return ChangeToDu(this.info[i].lng.lngD,this.info[i].lng.lngF,this.info[i].lng.lngM)
+            },
+            add: function () {
+                window.location.href="/relicManAdd";
+            },
+            edit:function(id,type){
+                //0:编辑1:更新
+                window.location.href="/relicManEdit?id="+id+"&type="+type;
+            },
+            view:function (id) {
+                window.location.href="/relicManView?id="+id;
+            },
+            del:function(id,index){
+                this.$confirm('确认删除?', '提示', {type: 'warning',lockScroll:false}).then(() => {
+                    axios.post("/relicManDel", {id: id}).then((res) => {
+                        if (res.data.status === 200) {
+                            this.$message.success(res.data.message);
+                            this.info.splice(index, 1)
+                        } else {
+                            this.$message.error(res.data.message)
+                        }
+
+                    })
+                  }).catch(() => {});
+            },
+            verify:function (id) {
+                this.$confirm("确认审核","提示",{lockScroll:false,type: 'warning'}).then(()=>{
+                    axios.post("/relicManverify", {id: id}).then((res) => {
+                        if (res.data.status === 200) {
+                            this.info=res.data.tempData;
+                            this.$message.success(res.data.message);
+                        } else {
+                            this.$message.error(res.data.message);
+                        }
+
+                    })
+                }).catch(() => {})
+            },
+            search(){
+                axios.get("/relicMan?search="+JSON.stringify(this.base.search)+"&type=1").then((res)=>{
+                        this.$message.success("搜索完成");
+                        res.data.tempData.forEach((v)=>{v.lat=JSON.parse(v.lat);v.lng=JSON.parse(v.lng)});
+                        this.info=res.data.tempData;
+                        this.base.page=res.data.pageInfo;
+                    
+                })
+            },
+            curPageChange(val){
+                this.base.loading=!this.base.loading;
+                axios.get(this.base.opUrl.list+"?curPage="+val+"&search="+JSON.stringify(this.base.search)+"&type=1").then((res)=>{
+                    this.base.page=res.data.pageInfo;
+                    res.data.tempData.forEach((v)=>{v.lat=JSON.parse(v.lat);v.lng=JSON.parse(v.lng)});
+                    this.info=res.data.tempData;
+                    this.base.loading=!this.base.loading;
+                })
+            }
+        }
+    })
+</script>

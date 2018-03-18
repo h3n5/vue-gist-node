@@ -1,0 +1,78 @@
+<%- include("../../template/head.ejs",{title:""}) %>
+<body class="pd15Iner">
+<div id="app" v-cloak class="widthBlock">
+    <el-form :model="base.tmpData" ref="base.tmpData" :rules="rules" class="myEleForm width50" style="margin-top: 60px">
+        <el-form-item label="原密码" prop="oldPwd" :label-width="labelWidth" >
+            <el-input type="password" v-model="base.tmpData.oldPwd" placeholder="请输入原密码"></el-input>
+        </el-form-item>
+        <el-form-item label="新密码" prop="newPwd1" :label-width="labelWidth" >
+            <el-input type="password" v-model="base.tmpData.newPwd1" placeholder="请输入新密码"></el-input>
+        </el-form-item>
+        <el-form-item label="确认新密码" prop="newPwd2" :label-width="labelWidth" >
+            <el-input type="password" v-model="base.tmpData.newPwd2" placeholder="请确认新密码"></el-input>
+        </el-form-item>
+        <el-form-item :label-width="labelWidth">
+            <el-button type="primary"  @click="submitForm('base.tmpData')">确 定</el-button>
+            <el-button @click="resetForm('base.tmpData')">重置</el-button>
+        </el-form-item>
+    </el-form>
+</div>
+</body>
+<script type="text/javascript">
+    var app = new Vue({
+        el: '#app',
+        data: {
+            base:{
+                tmpData:{oldPwd:"",newPwd1:"",newPwd2:""},
+                opUrl:{edit:"/sys_passSetting?opType=update"},
+            },
+            labelWidth: '120px',
+            rules: {
+                oldPwd: [
+                    { required: true, message: '请输入原密码', trigger: 'blur' },
+                ],newPwd1: [
+                    { required: true, message: '请输入新密码', trigger: 'blur' },
+                    { min: 6, message: '密码长度不少6位', trigger: 'blur' }
+                ],newPwd2: [
+                    { required: true, message: '确认新密码', trigger: 'blur' },
+                    { min: 6, message: '密码长度不少6位', trigger: 'blur' }
+                ]
+            }
+        },computed: {
+        },
+        methods: {
+            resetForm:function(formName) {//复原数据
+                this.$refs[formName].resetFields();
+            },
+            submitForm:function (formName) {//提交数据
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        if(this.base.tmpData.newPwd1!==this.base.tmpData.newPwd2){
+                            this.$message.error('两次新密码不一致!请重试');
+                            return;
+                        }
+                        var url=this.base.opUrl.edit;
+                        var data=this.base.tmpData;
+                        axios.post(url,{postData:data}).then(res=>{
+                            if(res.data.result=="ok"){
+                                this.$message({
+                                    message: '您的密码已更新成功!',
+                                    type: 'success',
+                                    onClose:function () {
+                                        window.location.reload();
+                                    }
+                                });
+                            }else{
+                                this.$message.error('您的密码更新失败,请重试!');
+                            }
+                        });
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            }
+        }
+    })
+</script>
+</html>

@@ -1,0 +1,4 @@
+[2018-01-24 17:12:15.409] [ERROR] logger - error url https://51yunqi.cn/json/workorder/repair/stock.html?fdId=154cbf41a9ac19c667f71424c1abef60&user=ceshi123&companyId=37&gdNo=WXD20160520003
+[2018-01-24 17:12:15.411] [ERROR] logger - 配料出库 error OK
+[2018-01-24 17:16:01.867] [ERROR] logger - error url https://51yunqi.cn/json/workorder/repair/stock.html?fdId=154cbd7712a1753327e7f674569b5a57&user=ceshi123&companyId=37&gdNo=WXD20160520001
+[2018-01-24 17:16:01.868] [ERROR] logger - 配料出库 error OK

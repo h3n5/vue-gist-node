@@ -1,0 +1,82 @@
+<%- include("../template/head.ejs",{title:"遗址历史版本"}) %>
+
+<body class="pd15Iner">
+<div id="app" v-cloak>
+    <div class="widthBlock">
+        <el-form :inline="true"  class="demo-form-inline form-item-clearMarign" @submit.native.prevent>
+            <el-form-item label="">
+                <el-input placeholder="输入名称搜索" v-model="base.search.name" @keyup.enter.native="search"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="search">查询</el-button>
+            </el-form-item>
+        </el-form>
+    </div>
+    <div  class="widthBlock">
+        <el-table 
+            :data="info"
+            stripe=""
+            style="min-height:450px"
+            border>
+            <el-table-column type="index" label="序号" width="60" align="center"></el-table-column>
+            <el-table-column prop="name" label="遗址名称" align="center"></el-table-column>
+            <el-table-column prop="address" label="遗址地址" width="200" align="center"></el-table-column>
+            <el-table-column prop="version" label="版本号" align="center"></el-table-column>
+            <el-table-column prop="createTime" label="更新时间" align="center">
+                <template slot-scope="scope">
+                <span>{{ scope.row.createTime.slice(0,10) }}</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="altitude" label="审核人" align="center">
+                <template slot-scope="scope">
+                <span>{{ (scope.row.approName==""||scope.row.approName==null)?"未审核":scope.row.approName }}</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="操作" align="center" width="70">
+                    <template slot-scope="scope">
+                    <a  href="javascript:;"  @click="view(scope.row.id)">查看</a>
+                    </template>
+            </el-table-column>
+        </el-table>
+        <%- include("../template/page_1.ejs") %>
+    </div>
+</div>
+</body>
+<script>
+    <%tempData.forEach((v)=>{v.lat=JSON.parse(v.lat);v.lng=JSON.parse(v.lng);})%>
+    var pageInfo=JSON.parse('<%-JSON.stringify(pageInfo)%>');
+    var app = new Vue({
+        el: '#app',
+        data: {
+            info:JSON.parse('<%-JSON.stringify(tempData)%>'),
+            base:{
+                tmpData:{},
+                page:pageInfo,
+                search:{name:""},
+                opUrl:{list:"/relicHistory"},
+                loading:false
+            }
+        },
+        methods:{
+            view:function (id) {
+                window.location.href="/relicManView?id="+id;
+            },
+            search(){
+                axios.get("/relicHistory?search="+JSON.stringify(this.base.search)+"&type=1").then((res)=>{
+                        this.$message.success("搜索完成");
+                        res.data.tempData.forEach((v)=>{v.lat=JSON.parse(v.lat);v.lng=JSON.parse(v.lng)});
+                        this.info=res.data.tempData;
+                        this.base.page=res.data.pageInfo;
+
+                })
+            },
+            curPageChange(val){
+                axios.get(this.base.opUrl.list+"?curPage="+val+"&search="+JSON.stringify(this.base.search)+"&type=1").then((res)=>{
+                    this.base.page=res.data.pageInfo;
+                    res.data.tempData.forEach((v)=>{v.lat=JSON.parse(v.lat);v.lng=JSON.parse(v.lng)});
+                    this.info=res.data.tempData;
+                })
+            }
+        }
+    })
+</script>

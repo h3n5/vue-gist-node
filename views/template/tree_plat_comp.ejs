@@ -1,0 +1,48 @@
+<%- include("./head.ejs",{title:""}) %>
+<body class="pd15Iner pdr0">
+<div id="app" v-cloak class="widthBlock">
+    <el-input
+            placeholder="输入关键字进行过滤"
+            v-model="filterText" size="mini">
+    </el-input>
+    <el-tree
+            class="filter-tree"
+            :data="data2"
+            :props="defaultProps"
+            default-expand-all
+            :filter-node-method="filterNode"
+            @node-click="handleNodeClick"
+            :expand-on-click-node="false"
+            ref="tree2">
+    </el-tree>
+</div>
+</body>
+<script type="text/javascript">
+    var treeData=JSON.parse('<%-JSON.stringify(treeData)%>');
+    new Vue({
+        el: '#app',
+        data: {
+            data2: treeData,
+            filterText:'',
+            defaultProps: {
+                children: 'children',
+                label: 'name'
+            }
+        },watch: {
+            filterText(val) {
+                this.$refs.tree2.filter(val);
+            }
+        },
+        methods: {
+            filterNode(value, data) {
+                if (!value) return true;
+                return data.name.indexOf(value) !== -1;
+            }, handleNodeClick(data) {
+                if (data.id!=-1) {//排除根公司
+                    $(parent.frames["mainFrame"])[0].location.href = "/sys_compEdit?id=" + data.id;
+                }
+            }
+        }
+    })
+</script>
+</html>

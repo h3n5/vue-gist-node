@@ -1,0 +1,261 @@
+<%- include("../template/head.ejs",{title:"遗址区域编辑"}) %>
+<style>
+body{
+    height:100%
+}
+.map{
+    position:fixed;
+    left:0;
+    right:0;
+    top:0;
+    bottom:0;
+}
+.content{
+    background-color: rgba(255,255,255,0.9);
+    z-index:99;
+    width:420px;
+    padding:10px;
+}
+</style>
+<body class="pd15Iner">
+<div id="app" v-cloak>
+    <div class="widthBlock  mt15">
+    <div class="map">
+        <div  id="bmap" style="height:700px"></div>
+    </div>
+        <el-row class="content">
+            <el-col :span="24" >
+                <div class="inputBox mb10">
+                    <el-input v-model="info.area_name" placeholder="请输入区域名称"  required >
+                        <template slot="prepend">名称</template>
+                    </el-input>
+                </div>
+                <div class="inputBox" v-if="false">
+                    <el-input v-model="info.area_position" placeholder="请选择区域位置">
+                        <template slot="prepend">区域位置</template>
+                    </el-input>
+                </div>
+                <div class="inputBox">
+                    <el-input v-model="info.remark" placeholder="请输入区域备注">
+                        <template slot="prepend">备注</template>
+                    </el-input>
+                </div>
+                <el-upload
+                        action="/areaUpload"
+                        list-type="picture-card"
+                        multiple
+                        :on-preview="handlePictureCardPreview"
+                        :on-remove="handleRemove"
+                        :on-success="handleSuccess"
+                        v-if=false>
+                    <i class="el-icon-plus"></i>
+                </el-upload>
+                <el-dialog :visible.sync="dialogVisible" :lock-scroll=false>
+                    <img width="100%" :src="dialogImageUrl" alt="">
+                </el-dialog>
+
+            </el-col>
+
+
+        </el-row>
+        <el-row class="content mt15" v-if="info.area_position.length>0">
+        <el-col :span="24">
+        <div class="poTable" >
+            <table class="layui-table">
+                <thead>
+                <tr>
+                    <td width="60">序号</td>
+                    <td>经度</td>
+                    <td>纬度</td>
+                    <td width="60">操作</td>
+                </tr>
+                </thead>
+                <tbody class="listBody">
+                <tr v-for="(value,index) in jsonParsePos">
+                    <td>{{index+1}}</td>
+                    <td><input class="el-input__inner"  v-model="value.lng" @input="posChange(value.lng,index,0)"></td>
+                    <td><input class="el-input__inner"  v-model="value.lat" @input="posChange(value.lat,index,1)"></td>
+                    <td><a href="javascript:;"  @click="delPos(index)">删除</a></td>
+
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        </el-col>
+        </el-row>
+        <el-row class="content mt15">
+        <el-col :span="24">
+        <div class="bthGroup">
+            <el-button type="primary" @click="addAreaSave">保存</el-button>
+            <el-button type="primary" class="js-remove" v-if=false>重置</el-button>
+            <el-button type="" @click="mapToggle" v-if="info.area_position.length==0">绘制{{show?"关闭":"开启"}}</el-button>
+            <el-button type="" @click="back">返回</el-button>
+        </div>
+        </el-col>
+        </el-row>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=jbOCEhhzH29ukvXtmk1FVdst3QhpeU1G"></script>
+<!--加载鼠标绘制工具-->
+<script type="text/javascript" src="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js"></script>
+<link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />
+<script>
+    <%tempData[0].area_position=JSON.parse(tempData[0].area_position)%>
+    var info=JSON.parse('<%-JSON.stringify(tempData[0])%>');
+    var img_list=[];
+    var attach=info.attach==""?[]:info.attach.split(",");
+    var localUrl=imgUrl();
+    for(var i=0;i<attach.length;i++){
+        img_list.push({name:"pic"+i,url:localUrl+attach[i]})
+    };
+    var app = new Vue({
+        el: '#app',
+        data: {
+            info: info,
+            userData:{id:this.info.id},
+            dialogVisible:false,
+            img_list:img_list,
+            dialogImageUrl:'',
+             show:true
+        },
+        computed: {
+            jsonParsePos:function () {
+                return this.info.area_position
+            }
+        },
+        watch:{
+            info:{
+                handler(curval,oldval){
+                    var points=[];
+                    curval.area_position.forEach((value,index)=>{
+                        points.push(new BMap.Point(value.lng, value.lat));
+                    })
+                    map.clearOverlays();
+                    var polygon = new BMap.Polygon(points, {
+                        strokeColor : "#1E9FFF",
+                        strokeWeight : 2,
+                        strokeOpacity : 0.8
+                    }); //创建多边形
+                    map.addOverlay(polygon); //增加多边形
+                    if(curval.area_position.length==0){
+                        if(!drawingManager.open()){drawingManager.open()};
+                    }
+                },
+                deep:true
+            }
+
+        },
+        mounted () {
+            map = new BMap.Map("bmap",{enableMapClick:false});    // 创建Map实例
+            map.centerAndZoom(new BMap.Point(118.15045, 24.495434), 13);  // 初始化地图,设置中心点坐标和地图级别
+            map.addControl(new BMap.MapTypeControl());   //添加地图类型控件
+            map.setCurrentCity("厦门");          // 设置地图显示的城市 此项是必须设置的
+            map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+            //实例化鼠标绘制工具
+            var styleOptions = {
+                strokeColor:"#1E9FFF",    //边线颜色。
+                fillColor:"#1E9FFF",      //填充颜色。当参数为空时，圆形将没有填充效果。
+                strokeWeight: 3,       //边线的宽度，以像素为单位。
+                strokeOpacity: 0.8,	   //边线透明度，取值范围0 - 1。
+                fillOpacity: 0.6,      //填充的透明度，取值范围0 - 1。
+                strokeStyle: 'solid' //边线的样式，solid或dashed。
+            };
+            drawingManager = new BMapLib.DrawingManager(map, {
+                isOpen: false, //是否开启绘制模式
+                drawingMode:BMAP_DRAWING_POLYGON,
+                drawingToolOptions: {
+                    anchor: BMAP_ANCHOR_TOP_RIGHT, //位置
+                    offset: new BMap.Size(5, 5), //偏离值
+                },
+                polygonOptions: styleOptions, //多边形的样式
+            });
+            //添加鼠标绘制工具监听事件，用于获取绘制结果
+            drawingManager.addEventListener('overlaycomplete', function (e) {
+                app.$data.info.area_position=e.overlay.so;//经纬度
+            });
+            var points=[];
+            info.area_position.forEach((value,index)=>{
+                points.push(new BMap.Point(value.lng, value.lat));
+            })
+            var polygon = new BMap.Polygon(points, {
+                strokeColor : "#1E9FFF",
+                strokeWeight : 2,
+                strokeOpacity : 0.8
+            });
+            map.addOverlay(polygon);
+        },
+        methods: {
+            mapToggle(){
+                this.show=!this.show;
+                if(this.show){
+                    drawingManager.open();
+                }else{
+                    drawingManager.close();
+                }
+            },
+            back(){
+                window.history.back()
+            },
+            addAreaSave: function (event) {
+                for(var i in this.info){
+                    if(this.info[i]==""){
+                        this.$message.warning(i+"不能为空");
+                        return;
+                    }
+                }
+                axios.post("/relicAreaEditSave", this.info).then((res) => {
+                    if (res.data.status === 200) {
+                        this.$message({message:res.data.message,type:"success",duration:1500,onClose:()=>{window.location.href="/relicArea"}});
+                    } else {
+                        this.$message.error(res.data.message);
+                    }
+
+                })
+            },
+            delPos(index) {
+                var pos=this.info.area_position;
+                pos.splice(index,1);
+                this.info.area_position=pos;
+            },
+            posChange(v,index,type){
+                //1:lat,0:lng
+                if(type==1){
+                    this.jsonParsePos.find((v,i)=>{
+                        return i==index
+                    }).lat=v.replace(/[^\-?\d.]/g,'');
+                }else{
+                    this.jsonParsePos.find((v,i)=>{
+                        return i==index
+                    }).lng=v.replace(/[^\-?\d.]/g,'');
+                }
+                this.info.area_position=this.jsonParsePos;
+            },
+            reSetMap(){
+                map.clearOverlays();
+                this.info.area_position.length=0;
+                drawingManager.open();
+            },
+            handleRemove(file, fileList) {
+                this.$message.success("删除成功");
+                var a=[];
+                fileList.forEach((v)=>{
+                    a.push(v.response.file.filename)
+                })
+                this.info.attach=a.join(",");
+            },
+            handlePictureCardPreview(file) {
+                this.dialogImageUrl = file.url;
+                this.dialogVisible = true;
+            },
+            handleSuccess(response, file, fileList){
+                var a=info.attach==""?[]:info.attach.split(",");
+                if(response.status===200){
+                    this.$message.success("上传成功")
+                    fileList.forEach((v)=>{if(v.response){a.push(v.response.file.filename)}})
+                }
+                this.info.attach=a.join(",");
+            }
+        }
+    })
+</script>

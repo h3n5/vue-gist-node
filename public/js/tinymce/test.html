@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>123</title>
+	<script src="./jquery-3.2.1.min.js"></script>
+	<script src='jquery.tinymce.min.js'></script>
+	<script src='tinymce.min.js'></script>
+</head>
+<body>
+	<textarea id="tinymceEditer">Next, start a free trial!</textarea>
+	<script>
+	$(function(){
+		tinymce.init({
+			selector: '#tinymceEditer',
+			branding: false,
+			elementpath: false,
+			height: "400px",
+			language: 'zh_CN',
+			menubar: 'edit insert view format table tools',
+			plugins: [
+				'advlist autolink lists link image charmap print preview hr anchor pagebreak imagetools',
+				'searchreplace visualblocks visualchars code fullpage',
+				'insertdatetime media nonbreaking save table contextmenu directionality',
+				'emoticons paste textcolor colorpicker textpattern imagetools codesample'
+			],
+			toolbar1: ' newnote print preview | undo redo | insert | styleselect | forecolor backcolor bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image emoticons media codesample',
+			autosave_interval: '20s',
+			image_advtab: true,
+			table_default_styles: {
+				width: '100%',
+				borderCollapse: 'collapse'
+			},
+			setup: function (editor) {
+				editor.on('init', function (e) {
+					if (localStorage.editorContent) {
+						tinymce.get('tinymceEditer').setContent(localStorage.editorContent);
+					}
+				});
+				editor.on('keydown', function (e) {
+					localStorage.editorContent = tinymce.get('tinymceEditer').getContent();
+				});
+			}
+		});
+	})
+	</script>
+</body>
+</html>

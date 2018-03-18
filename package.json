@@ -1,0 +1,26 @@
+{
+  "name": "nodeYunqiApp",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "app-root-path": "^2.0.1",
+    "body-parser": "~1.13.2",
+    "connect-redis": "^3.3.3",
+    "cookie-parser": "~1.3.5",
+    "cors": "^2.8.4",
+    "debug": "~2.2.0",
+    "ejs": "~2.3.3",
+    "express": "~4.13.1",
+    "express-session": "^1.15.6",
+    "log4js": "^2.5.3",
+    "morgan": "~1.6.1",
+    "multer": "^1.3.0",
+    "mysql": "^2.15.0",
+    "serve-favicon": "~2.3.0",
+    "ueditor": "^1.0.0",
+    "uuid": "^3.2.1"
+  }
+}

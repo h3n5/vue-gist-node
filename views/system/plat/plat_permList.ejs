@@ -1,0 +1,127 @@
+<%- include("../../template/head.ejs",{title:""}) %>
+<body class="pd15Iner">
+<div id="app" v-cloak>
+    <div class="widthBlock">
+        <div class="fr"><el-button type="primary" @click="addData">新增</el-button> <el-button type="primary"  @click="editData">编辑</el-button><el-button type="primary" @click="delData">删除</el-button></div>
+        <el-form :inline="true"  class="demo-form-inline form-item-clearMarign">
+            <el-form-item label="权限名称">
+                <el-input placeholder="请输入权限名称" v-model="base.search.permName"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="subSearch">查询</el-button>
+            </el-form-item>
+        </el-form>
+    </div>
+    <div class="widthBlock">
+        <el-table :data="listData" stripe="" highlight-current-row @current-change="handleCurrentChange">
+            <el-table-column type="index" label="序号" width="180"></el-table-column>
+            <el-table-column prop="permName" label="权限名称" width="180"></el-table-column>
+            <el-table-column prop="permUrl" label="权限url"></el-table-column>
+        </el-table>
+        <%- include("../../template/page_1.ejs") %>
+    </div>
+
+    <el-dialog title="权限信息" :visible.sync="dialogVisible">
+        <el-form :model="base.tmpData" ref="base.tmpData" :rules="rules">
+            <el-form-item label="权限名称" prop="permName" :label-width="labelWidth">
+                <el-input v-model="base.tmpData.permName" placeholder="请输入内容"></el-input>
+            </el-form-item>
+            <el-form-item label="权限url" prop="permUrl" :label-width="labelWidth">
+                <el-input v-model="base.tmpData.permUrl" placeholder="请输入内容"></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="resetForm('base.tmpData')">取 消</el-button>
+            <el-button type="primary"  @click="submitForm('base.tmpData')">确 定</el-button>
+        </div>
+    </el-dialog>
+</div>
+</body>
+<script type="text/javascript">
+    var listData=JSON.parse('<%-JSON.stringify(listData)%>');
+    var pageInfo=JSON.parse('<%-JSON.stringify(pageInfo)%>');
+    var app = new Vue({
+        el: '#app',
+        data: {
+            listData: listData,
+            base:{
+                tmpData:{},
+                page:pageInfo,
+                search:{permName:pageInfo.search.permName}
+            },
+            dialogVisible: false,
+            labelWidth: '120px',
+            currentRow:null,
+            saveType:"",
+            rules: {
+                permName: [
+                    { required: true, message: '权限名称', trigger: 'blur' },
+                    { min: 2, message: '文字长度不少两个', trigger: 'blur' }
+                ],permUrl: [
+                    { required: true, message: '请输入权限url', trigger: 'blur' },
+                    { min: 2, message: '文字长度不少两个', trigger: 'blur' },
+                    { pattern: /\/.*\//, message: '开头和结束要包含"/"号' }
+                ]
+            }
+        },computed: {
+        },
+        methods: {
+            addData: function (){//添加
+                this.saveType="add";
+                this.base.tmpData=this.initModJson();
+                this.dialogVisible = true;
+            },editData: function (){//编辑
+                this.saveType="edit";
+                if (isEmpty(this.currentRow)){
+                    this.$message.error('请选择要编辑的记录!');
+                    return;
+                }
+                this.base.tmpData=this.currentRow;
+                this.dialogVisible = true;
+            },initModJson:function(){//初始化结构
+                return {id:"", permName: "", permUrl: "", isUse:1};
+            },handleCurrentChange :function(val) {//获取当前行
+                this.currentRow = val;
+            },submitForm:function (formName) {//提交数据
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        var url=(this.saveType=="add"?"/plat_permAdd":"/plat_permEdit");
+                        axios.post(url,{postData:this.base.tmpData}).then(res=>{
+                            window.location.reload();
+                            this.dialogVisible = false;
+                        });
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            },resetForm:function(formName) {//复原数据
+                this.dialogVisible = false;
+                this.$refs[formName].resetFields();
+            },subSearch:function() {//搜索
+                window.location.replace("/plat_permList?search="+JSON.stringify(this.base.search));
+            },curPageChange(val){
+                window.location.replace("/plat_permList?curPage="+val+"&search="+JSON.stringify(this.base.search));
+            },delData: function (){//删除数据
+                var msg = "确定删除此条数据吗?";
+                this.$confirm(msg, '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    axios.post("/plat_permDel",{vid:this.currentRow.id}).then(res=>{
+                        if(res.data.result=="ok"){
+                            this.$message.success('操作成功!');
+                            window.location.reload();
+                        }else{
+                            this.$message.error('操作失败,请重试!');
+                        }
+                    });
+                });
+            }
+        },created () {
+            this.base.tmpData=this.initModJson();
+        }
+    })
+</script>
+</html>

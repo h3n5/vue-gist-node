@@ -1,0 +1,64 @@
+﻿<%- include("../../template/head.ejs",{title:""}) %>
+<body class="pd15Iner">
+<div id="app">
+  <div class="">
+    <div class="tabs_title_only">
+      <span>系统参数</span>
+    </div>
+    <ul class="ulImg">
+
+      <li onClick="openNewtabs(this,'/plat_compList','平台公司')">
+        <span class="isCompMust">必填</span>
+        <div class="clickImg">
+          <img src="images/setting/setImg_s1.png" width="60" height="60" alt="" />
+        </div>
+        <div class="imgTitle">平台公司</div>
+        <span class="imgInfo isComp">已完成</span>
+      </li>
+
+        <% if(chkPerm("plat_permList")){ %>
+      <li onClick="openNewtabs(this,'/plat_permList','平台权限')">
+        <span class="isCompMust">必填</span>
+        <div class="clickImg">
+          <img src="images/setting/setImg_s2.png" width="60" height="60" alt="" />
+        </div>
+        <div class="imgTitle">平台权限</div>
+        <span class="imgInfo isComp">已完成</span>
+      </li>
+        <% } %>
+        <% if(chkPerm("plat_roleList")){ %>
+      <li onClick="openNewtabs(this,'/plat_roleList','平台角色')">
+        <span class="isCompMust">必填</span>
+        <div class="clickImg">
+          <img src="images/setting/setImg_s5.png" width="60" height="60" alt="" />
+        </div>
+        <div class="imgTitle">平台角色</div>
+        <span class="imgInfo isComp">已完成</span>
+      </li>
+        <% } %>
+        <% if(chkPerm("plat_rolePermList")){ %>
+      <li onClick="openNewtabs(this,'/plat_rolePermList','角色权限')">
+        <span class="isCompMust">必填</span>
+        <div class="clickImg">
+          <img src="images/setting/setImg_s4.png" width="60" height="60" alt="" />
+        </div>
+        <div class="imgTitle">角色权限</div>
+        <span class="imgInfo isComp">已完成</span>
+      </li>
+        <% } %>
+        <% if(chkPerm("plat_userFrame")){ %>
+      <li onClick="openNewtabs(this,'/plat_userFrame','人员管理')">
+        <span class="isCompMust">必填</span>
+        <div class="clickImg">
+          <img src="images/setting/setImg_s3.png" width="60" height="60" alt="" />
+        </div>
+        <div class="imgTitle">人员管理</div>
+        <span class="imgInfo isComp">已完成</span>
+      </li>
+        <% } %>
+    </ul>
+  </div>
+</div>
+</body>
+
+</html>

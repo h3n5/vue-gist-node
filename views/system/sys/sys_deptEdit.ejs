@@ -1,0 +1,96 @@
+<%- include("../../template/head.ejs",{title:""}) %>
+<body class="pd15Iner">
+<div id="app" v-cloak class="widthBlock">
+<div class="btnPos"><el-button type="primary" @click="addData" class="fr">新增</el-button> </div>
+<el-form :model="data" ref="data" :rules="rules" class="myEleForm">
+        <el-form-item label="部门名称" prop="deptName" :label-width="labelWidth" >
+            <el-input v-model="data.deptName" placeholder="请输入内容"></el-input>
+        </el-form-item>
+        <el-form-item :label-width="labelWidth">
+        <el-button type="primary"  @click="submitForm('data','edit')">保存</el-button>
+        <el-button type="primary" @click="delData">删除</el-button>
+        </el-form-item>
+</el-form>
+
+<el-dialog title="添加子部门" :visible.sync="dialogVisible">
+        <el-form :model="base.tmpData" ref="base.tmpData" :rules="rules">
+            <el-form-item label="部门名称" prop="deptName" :label-width="labelWidth">
+                <el-input v-model="base.tmpData.deptName" placeholder="请输入内容"></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="dialogVisible=false">取 消</el-button>
+            <el-button type="primary"  @click="submitForm('base.tmpData','add')">确 定</el-button>
+        </div>
+</el-dialog>
+</div>
+</body>
+<script type="text/javascript">
+    var data=JSON.parse('<%-JSON.stringify(data)%>');
+    var app = new Vue({
+        el: '#app',
+        data: {
+            data: data,
+            base:{
+                tmpData:{}
+            },
+            labelWidth: '120px',
+            dialogVisible: false,
+            rules: {
+                deptName: [
+                    { required: true, message: '请输入部门名称', trigger: 'blur' },
+                    { min: 2, message: '文字长度不少两个', trigger: 'blur' }
+                ]
+            }
+        },computed: {
+        },
+        methods: {
+            addData: function (){//添加
+                var dataJson={id:"", deptName: "", parentId: this.data.id, companyId:""};
+                this.base.tmpData=dataJson;
+                this.dialogVisible = true;
+            },delData: function (){//删除数据
+                axios.post("/checkDelDept",{postData:this.data}).then(res=>{
+                    if(res.data.result!="ok"){
+                        this.$message.warning('请先删除子节点!');
+                    }else{
+                        var msg = "确定删除此条数据吗?";
+                        this.$confirm(msg, '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        }).then(() => {
+                            axios.post("/delDeptDept",{vid:this.data.id}).then(res=>{
+                                if(res.data.result=="ok"){
+                                    this.$message.success('操作成功!');
+                                    window.parent.location.reload();
+                                }else{
+                                    this.$message.error('操作失败,请重试!');
+                                }
+                            });
+                        });
+                    }
+                });
+            },submitForm:function (formName,type) {//提交数据
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        var url=(type=="add"?"/sys_deptAdd":"/sys_deptEditSave");
+                        var data=(type=="add"? this.base.tmpData:this.data);
+                        axios.post(url,{postData:data}).then(res=>{
+                            if(res.data.result=="ok"){
+                                this.$message.success('操作成功!');
+                                window.parent.location.reload();
+                            }else{
+                                this.$message.error('操作失败,请重试!');
+                            }
+                        });
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            }
+        }
+    })
+</script>
+</html>
